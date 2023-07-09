@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="l">
+
+<!-- 강습 상품 상세페이지 보기 lessonView.do -->
+	<select id="selectOneLesson" parameterType="_int" resultMap="getLesson">
+		SELECT * FROM LESSON WHERE LESSON_NO = ${_parameter}
+	</select>
+
+
+<!-- 강습 상품 신규 등록 -->
+	<insert id="insertLesson" parameterType="l">
+		INSERT INTO LESSON VALUES (LESSON_SEQ.NEXTVAL, #{lessonLevel}, #{lessonTitle}, #{lessonPrice}, #{lessonInfo}, #{lessonInfoPic}, #{lessonTeacher}, #{lessonMaxNo}, #{lessonStartTime}, #{lessonEndTime}, -1, '', #{writer}, #{lessonCity}, '')
+		<selectKey resultType="_int" order="AFTER" keyProperty="lessonNo">
+			SELECT MAX(LESSON_NO) FROM LESSON
+		</selectKey>
+	</insert>
+
+
+<!-- 상품 등록 후 강습 상품 사진 업로드 -->
+	<update id="uploadLessonPhoto" parameterType="l">
+		UPDATE LESSON SET
+		LESSON_INFO_PIC = #{lessonInfoPic}
+  		WHERE LESSON_NO = #{lessonNo}
+	</update>
+
+
+<!-- 강습 상품 수정 -->
+	<update id="updateLesson" parameterType="l">
+		UPDATE LESSON SET
+		<if test='lessonLevel != 0'>LESSON_LEVEL = #{lessonLevel},</if>
+		<if test='lessonTitle != null'>LESSON_TITLE = #{lessonTitle},</if>
+		<if test='lessonCity != null'>LESSON_CITY = #{lessonCity},</if>
+		<if test='lessonInfo != null'>LESSON_INFO = #{lessonInfo},</if>
+		<if test='lessonTeacher != null'>LESSON_TEACHER = #{lessonTeacher},</if>
+		<if test='lessonMaxNo != 0'>LESSON_MAX_NO = #{lessonMaxNo},</if>
+		<if test='lessonStartTime != null'>LESSON_START_TIME = #{lessonStartTime},</if>
+		<if test='lessonEndTime != null'>LESSON_END_TIME = #{lessonEndTime},</if>
+		<if test='lessonStatus == -2'>LESSON_STATUS = -1,</if>
+		LESSON_PRICE = #{lessonPrice}
+  		WHERE LESSON_NO = #{lessonNo}
+	</update>
+
+
+<!-- 강습 상품 판매상태 변경 -->
+	<update id="updateLessonStatus">
+		update lesson set lesson_status=#{productStatus} where lesson_no=#{productNo}
+	</update>
+
+
+
+<!-- 조건에 따라, 판매 중인 상품 Row들 1페이씩 조회용  -->
+	<select id="selectLessonPage" parameterType="kr.co.lesson.model.vo.LessonListing" resultType="l">
+		SELECT * FROM (SELECT ROWNUM AS RN, N. * FROM (
+			SELECT
+			LESSON_NO as lessonNo,
+			LESSON_LEVEL as lessonLevel,
+			LESSON_TITLE as lessonTitle,
+			LESSON_PRICE as lessonPrice,
+			LESSON_INFO_PIC as lessonInfoPic,
+			LESSON_TEACHER as lessonTeacher,
+			LESSON_SCORE as lessonScore,
+			LESSON_CITY as lessonCity
+			FROM LESSON WHERE LESSON_STATUS = 1
+		<if test='lessonLevel > 0'>AND (LESSON_LEVEL = #{lessonLevel})</if>
+		<if test='ltKeywords != null'>
+			<foreach collection="ltKeywords" item="keyword" separator=" ">
+				AND (LESSON_TITLE LIKE '%'||#{keyword}||'%')
+			</foreach>
+		</if>
+		<if test='lessonCity != null'>AND (LESSON_CITY = #{lessonCity})</if>
+		<if test='lessonScore > 0'>AND (LESSON_SCORE >= #{lessonScore})</if>
+		<if test='lessonPriceMin > 0'>AND (LESSON_PRICE >= #{lessonPriceMin})</if>
+		<if test='lessonPriceMax > 0'><![CDATA[ AND (LESSON_PRICE <= #{lessonPriceMax} ) ]]></if>
+			ORDER BY
+			<if test='sortingOrder == 1'>LESSON_PRICE DESC, </if>
+			<if test='sortingOrder == 2'>LESSON_PRICE ASC, </if>
+			<if test='sortingOrder == 3'>LESSON_SCORE DESC, </if>
+			LESSON_TITLE ASC
+		)N) WHERE RN BETWEEN #{pagingStart} AND #{pagingEnd}
+	</select>
+
+
+<!-- 조건에 맞는 판매중인 상품들의 총 개수  -->
+	<select id="totalNumberOfLessonByProduct" parameterType="kr.co.lesson.model.vo.LessonListing" resultType="_int">
+		SELECT COUNT(*) FROM LESSON WHERE LESSON_STATUS = 1
+		<if test='lessonLevel > 0'>AND (LESSON_LEVEL = #{lessonLevel})</if>
+		<if test='ltKeywords != null'>
+			<foreach collection="ltKeywords" item="keyword" separator=" ">
+				AND (LESSON_TITLE LIKE '%'||#{keyword}||'%')
+			</foreach>
+		</if>
+		<if test='lessonCity != null'>AND (LESSON_CITY = #{lessonCity})</if>
+		<if test='lessonScore > 0'>AND (LESSON_SCORE >= #{lessonScore})</if>
+		<if test='lessonPriceMin > 0'>AND (LESSON_PRICE >= #{lessonPriceMin})</if>
+		<if test='lessonPriceMax > 0'><![CDATA[ AND (LESSON_PRICE <= #{lessonPriceMax} ) ]]></if>
+	</select>
+
+
+<!-- 조건에 맞는 레슨리스트 불러오기 -->
+	<select id="selectLessonList" parameterType="l" resultMap="getLesson">
+		SELECT LESSON_NO, LESSON_TITLE, LESSON_INFO_PIC, LESSON_LEVEL, LESSON_MAX_NO, LESSON_START_TIME, LESSON_END_TIME, LESSON_PRICE 
+		FROM LESSON WHERE LESSON_MAX_NO>=#{lessonMaxNo} AND LESSON_CITY = #{lessonCity} AND LESSON_STATUS = 1
+		
+		<choose>
+			<when test='level1 + level2 + level3 == 3'>AND LESSON_LEVEL IN(1, 2, 3)</when>
+			<when test='level1 + level2 + level3 == 1'>
+				AND LESSON_LEVEL IN(
+				<if test='level1 == 1'>1</if>
+				<if test='level2 == 1'>2</if>
+				<if test='level3 == 1'>3</if>
+				)
+			</when>
+			<when test='level1 + level2 + level3 == 2'>
+				AND LESSON_LEVEL IN(
+				<if test='level1 == 1'>1,</if>
+				<if test='level2 == 1 and level1 == 1'>2</if>
+				<if test='level2 == 1 and level1 != 1'>2,</if>
+				<if test='level3 == 1'>3</if>
+				)
+			</when>
+		</choose>
+		
+	</select>
+
+
+<!-- 강습 상품 Lesson 의 모든 column에 대한 resultMap -->
+	<resultMap type="l" id="getLesson">
+		<result column="LESSON_NO" property="lessonNo"></result>
+		<result column="LESSON_LEVEL" property="lessonLevel"></result>
+		<result column="LESSON_TITLE" property="lessonTitle"></result>
+		<result column="LESSON_CITY" property="lessonCity"></result>
+		<result column="LESSON_PRICE" property="lessonPrice"></result>
+		<result column="LESSON_INFO" property="lessonInfo"></result>
+		<result column="LESSON_INFO_PIC" property="lessonInfoPic"></result>
+		<result column="LESSON_TEACHER" property="lessonTeacher"></result>
+		<result column="LESSON_MAX_NO" property="lessonMaxNo"></result>
+		<result column="LESSON_START_TIME" property="lessonStartTime"></result>
+		<result column="LESSON_END_TIME" property="lessonEndTime"></result>
+		<result column="LESSON_STATUS" property="lessonStatus"></result>
+		<result column="LESSON_SCORE" property="lessonScore"></result>
+		<result column="WRITER" property="writer"></result>
+		<result column="REJECT_COMMENT" property="rejectComment"></result>
+	</resultMap>
+
+
+</mapper>

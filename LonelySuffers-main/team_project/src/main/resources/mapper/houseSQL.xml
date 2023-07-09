@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="h">
+
+<!-- 숙박 상품 상세페이지 보기 houseView.do -->
+	<select id="selectOneHouse" parameterType="_int" resultMap="getHouse">
+		SELECT * FROM HOUSE WHERE HOUSE_NO = ${_parameter}
+	</select>
+
+
+<!-- 숙박 상품 신규 등록 -->
+	<insert id="insertHouse" parameterType="h">
+		INSERT INTO HOUSE VALUES (HOUSE_SEQ.NEXTVAL, #{houseTitle}, #{houseCity}, #{houseAddress}, #{houseDescription}, #{housePhoto1}, #{housePhoto2}, #{housePhoto3}, #{housePhoto4}, -1, '', #{writer}, #{roomTitle}, #{roomCapa}, #{housePrice}, #{houseBarbecue}, #{houseBarbecuePrice}, #{houseParty}, #{housePartyPrice}, #{houseLat}, #{houseLng}, '')
+		<selectKey resultType="_int" order="AFTER" keyProperty="houseNo">
+			SELECT MAX(HOUSE_NO) FROM HOUSE
+		</selectKey>
+	</insert>
+
+
+<!-- 상품 등록 후 숙박 상품 사진들 업로드 -->
+	<update id="uploadHousePhotos" parameterType="h">
+		UPDATE HOUSE SET
+		HOUSE_NO = #{houseNo}
+		<if test='housePhoto1 != null'>, HOUSE_PHOTO1 = #{housePhoto1}</if>
+		<if test='housePhoto2 != null'>, HOUSE_PHOTO2 = #{housePhoto2}</if>
+		<if test='housePhoto3 != null'>, HOUSE_PHOTO3 = #{housePhoto3}</if>
+		<if test='housePhoto4 != null'>, HOUSE_PHOTO4 = #{housePhoto4}</if>
+  		WHERE HOUSE_NO = #{houseNo}
+	</update>
+
+
+<!-- 숙박 상품 수정 -->
+	<update id="updateHouse" parameterType="h">
+		UPDATE HOUSE SET 
+		<if test='houseTitle != null'>HOUSE_TITLE = #{houseTitle},</if>
+		<if test='houseAddress != null'>HOUSE_ADDRESS = #{houseAddress},</if>
+		<if test='houseCity != null'>HOUSE_CITY = #{houseCity},</if>
+		<if test='houseLng != null'>HOUSE_LNG = #{houseLng},</if>
+		<if test='houseLat != null'>HOUSE_LAT = #{houseLat},</if>
+		<if test='houseDescription != null'>HOUSE_DESCRIPTION = #{houseDescription},</if>
+		<if test='houseBarbecuePrice != 0'>HOUSE_BARBECUE_PRICE = #{houseBarbecuePrice},</if>
+		<if test='housePartyPrice != 0'>HOUSE_PARTY_PRICE = #{housePartyPrice},</if>
+		<if test='houseStatus == -2'>HOUSE_STATUS = -1,</if>
+		HOUSE_PRICE = #{housePrice},
+		HOUSE_BARBECUE = #{houseBarbecue},
+		HOUSE_PARTY = #{houseParty}
+  		WHERE HOUSE_NO = #{houseNo}
+	</update>
+
+
+<!-- 조건에 따라, 판매 중인 상품 Row들 1페이씩 조회용  -->
+	<select id="selectHousePage" parameterType="kr.co.house.model.vo.HouseListing" resultType="h">
+		SELECT * FROM (SELECT ROWNUM AS RN, N. * FROM (
+			SELECT
+			HOUSE_NO as houseNo,
+			HOUSE_TITLE as houseTitle,
+			HOUSE_CITY as houseCity,
+			HOUSE_PHOTO1 as housePhoto1,
+			HOUSE_SCORE as houseScore,
+			ROOM_TITLE as roomTitle,
+			ROOM_CAPA as roomCapa,
+			HOUSE_PRICE as housePrice,
+			HOUSE_BARBECUE as houseBarbecue,
+			HOUSE_PARTY as houseParty
+			FROM HOUSE WHERE HOUSE_STATUS = 1
+		<if test='htKeywords != null'>
+			<foreach collection="htKeywords" item="keyword" separator=" ">
+				AND (HOUSE_TITLE LIKE '%'||#{keyword}||'%')
+			</foreach>
+		</if>
+		<if test='rtKeywords != null'>
+			<foreach collection="rtKeywords" item="keyword" separator=" ">
+				AND (ROOM_TITLE LIKE '%'||#{keyword}||'%')
+			</foreach>
+		</if>
+		<if test='houseCity != null'>AND (HOUSE_CITY = #{houseCity})</if>
+		<if test='houseScore > 0'>AND (HOUSE_SCORE >= #{houseScore})</if>
+		<if test='roomCapaMin > 0'>AND (ROOM_CAPA >= #{roomCapaMin})</if>
+		<if test='roomCapaMax > 0'><![CDATA[ AND (ROOM_CAPA <= #{roomCapaMax} ) ]]></if>
+		<if test='housePriceMin > 0'>AND (HOUSE_PRICE >= #{housePriceMin})</if>
+		<if test='housePriceMax > 0'><![CDATA[ AND (HOUSE_PRICE <= #{housePriceMax} ) ]]></if>
+		<if test='houseBarbecue == 1'>AND (HOUSE_BARBECUE = 1)</if>
+		<if test='houseParty == 1'>AND (HOUSE_PARTY = 1)</if>
+			ORDER BY
+			<if test='sortingOrder == 1'>HOUSE_PRICE DESC, </if>
+			<if test='sortingOrder == 2'>HOUSE_PRICE ASC, </if>
+			<if test='sortingOrder == 3'>HOUSE_SCORE DESC, </if>
+			HOUSE_ADDRESS ASC
+		)N) WHERE RN BETWEEN #{pagingStart} AND #{pagingEnd}
+	</select>
+
+
+<!-- 숙박 상품 판매상태 변경 -->
+	<update id="updateHouseStatus" parameterType="_int">
+		update house set house_status=#{productStatus} where house_no=#{productNo}
+	</update>
+
+
+<!-- 조건에 맞는 판매중인 상품들의 총 개수  -->
+	<select id="totalNumberOfHouseByProduct" parameterType="kr.co.house.model.vo.HouseListing" resultType="_int">
+		SELECT COUNT(*) FROM HOUSE WHERE HOUSE_STATUS = 1
+		<if test='htKeywords != null'>
+			<foreach collection="htKeywords" item="keyword" separator=" ">
+				AND (HOUSE_TITLE LIKE '%'||#{keyword}||'%')
+			</foreach>
+		</if>
+		<if test='rtKeywords != null'>
+			<foreach collection="rtKeywords" item="keyword" separator=" ">
+				AND (ROOM_TITLE LIKE '%'||#{keyword}||'%')
+			</foreach>
+		</if>
+		<if test='houseCity != null'>AND (HOUSE_CITY = #{houseCity})</if>
+		<if test='houseScore > 0'>AND (HOUSE_SCORE >= #{houseScore})</if>
+		<if test='roomCapaMin > 0'>AND (ROOM_CAPA >= #{roomCapaMin})</if>
+		<if test='roomCapaMax > 0'><![CDATA[ AND (ROOM_CAPA <= #{roomCapaMax} ) ]]></if>
+		<if test='housePriceMin > 0'>AND (HOUSE_PRICE >= #{housePriceMin})</if>
+		<if test='housePriceMax > 0'><![CDATA[ AND (HOUSE_PRICE <= #{housePriceMax} ) ]]></if>
+		<if test='houseBarbecue == 1'>AND (HOUSE_BARBECUE = 1)</if>
+		<if test='houseParty == 1'>AND (HOUSE_PARTY = 1)</if>
+	</select>
+
+
+<!-- 네이버지도 api를 위한 위도,경도 조회용 -->
+	<select id="selectAllAddress" resultType="h">
+		SELECT
+		HOUSE_NO as houseNo,
+		HOUSE_CITY as houseCity,
+		HOUSE_LAT as houseLat,
+		HOUSE_LNG as houseLng
+		FROM HOUSE WHERE HOUSE_STATUS = 1
+	</select>
+
+
+<!-- 키오스크 조건에 맞는 숙소리스트 -->
+	<select id="selectRoomList" parameterType = "h" resultMap="getHouse">
+	
+		SELECT DISTINCT R.HOUSE_NO, HOUSE_PHOTO1, H.HOUSE_TITLE, H.HOUSE_PRICE, H.ROOM_CAPA, NVL(HOUSE_BARBECUE_PRICE,0) AS HOUSE_BARBECUE_PRICE, NVL(HOUSE_PARTY_PRICE,0) AS HOUSE_PARTY_PRICE
+		FROM ROOM R LEFT JOIN HOUSE H ON R.HOUSE_NO = H.HOUSE_NO 
+		WHERE ROOM_ENABLE = 1
+		AND HOUSE_CITY=#{houseCity}
+		AND H.ROOM_CAPA>=#{roomCapa}
+		<choose>
+			<when test='houseBarbecue==1'>AND HOUSE_BARBECUE = 1</when>
+		</choose>
+		<choose>
+			<when test='houseParty==1'>AND  HOUSE_PARTY = 1</when>
+		</choose>
+				
+		AND ROOM_NO NOT IN
+		(SELECT R.ROOM_NO FROM
+		ROOM R LEFT JOIN HOUSE H ON R.HOUSE_NO = H.HOUSE_NO
+		LEFT JOIN ROOM_BOOK B ON R.ROOM_NO = B.ROOM_NO
+		WHERE #{bookStartDate} BETWEEN BOOK_START_DATE AND BOOK_END_DATE OR #{bookEndDate} BETWEEN BOOK_START_DATE AND BOOK_END_DATE) ORDER BY HOUSE_NO ASC
+		
+	</select>
+
+
+<!-- 모달용으로 복사, 숙박 상품 House로부터 받은 houseNo이면서 예약일이 겹치지 않고 혹여나 예약일이 겹치더라도 결제취소가 일어난 방들을 조회  -->
+	<select id="selectAllAvailableRoomList" parameterType = "h" resultMap = "getHouse">
+		SELECT R.ROOM_NO, R.ROOM_TITLE, R.ROOM_NAME, R.HOUSE_NO, HOUSE_PRICE, HOUSE_BARBECUE_PRICE, HOUSE_PARTY_PRICE
+		FROM ROOM R
+		LEFT JOIN HOUSE H ON R.HOUSE_NO=H.HOUSE_NO
+		WHERE R.ROOM_CAPA>=#{roomCapa}
+		AND R.HOUSE_NO=#{houseNo}
+		AND ROOM_NO NOT IN(
+		SELECT ROOM_NO FROM ROOM_BOOK
+		WHERE ROOM_BOOK_NO IN (
+		SELECT ROOM_BOOK_NO FROM
+		ORDER_TBL JOIN ORDER_DETAIL USING(ORDER_NO)
+		WHERE ORDER_STATUS=1 AND ROOM_BOOK_NO IS NOT NULL
+		AND (#{bookStartDate} BETWEEN BOOK_START_DATE AND BOOK_END_DATE OR #{bookEndDate} BETWEEN BOOK_START_DATE AND BOOK_END_DATE)
+		                        )
+		                    )ORDER BY R.ROOM_NO
+	</select>
+		
+
+<!-- 숙박 상품 House 의 모든 column에 대한 resultMap -->
+	<resultMap type="h" id="getHouse">
+		<result column="HOUSE_NO" property="houseNo"></result>
+		<result column="HOUSE_TITLE" property="houseTitle"></result>
+		<result column="HOUSE_CITY" property="houseCity"></result>
+		<result column="HOUSE_ADDRESS" property="houseAddress"></result>
+		<result column="HOUSE_DESCRIPTION" property="houseDescription"></result>
+		<result column="HOUSE_PHOTO1" property="housePhoto1"></result>
+		<result column="HOUSE_PHOTO2" property="housePhoto2"></result>
+		<result column="HOUSE_PHOTO3" property="housePhoto3"></result>
+		<result column="HOUSE_PHOTO4" property="housePhoto4"></result>
+		<result column="HOUSE_STATUS" property="houseStatus"></result>
+		<result column="HOUSE_SCORE" property="houseScore"></result>
+		<result column="WRITER" property="writer"></result>
+		<result column="ROOM_TITLE" property="roomTitle"></result>
+		<result column="ROOM_CAPA" property="roomCapa"></result>
+		<result column="HOUSE_PRICE" property="housePrice"></result>
+		<result column="HOUSE_BARBECUE" property="houseBarbecue"></result>
+		<result column="HOUSE_BARBECUE_PRICE" property="houseBarbecuePrice"></result>
+		<result column="HOUSE_PARTY" property="houseParty"></result>
+		<result column="HOUSE_PARTY_PRICE" property="housePartyPrice"></result>
+		<result column="REJECT_COMMENT" property="rejectComment"></result>
+		<result column="ROOM_NO" property="roomNo"></result>
+		<result column="ROOM_NAME" property="roomName"></result>
+		<result column="HOUSE_LNG" property="houseLng"></result>
+		<result column="HOUSE_LAT" property="houseLat"></result>
+	</resultMap>
+
+	
+</mapper>

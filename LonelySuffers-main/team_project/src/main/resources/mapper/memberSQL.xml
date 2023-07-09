@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="member">
+ 	<select id="login" parameterType="m" resultType="m">
+ 		select 
+	 		member_no as memberNo,
+	 		member_id as memberId,
+	 		member_pw as memberPw,
+	 		member_name as memberName,
+	 		member_gender as memberGender,
+	 		member_phone as memberPhone,
+	 		member_email as memberEmail,
+	 		member_grade as memberGrade,
+	 		enroll_date as enrollDate
+ 		from 
+ 			member_tbl 
+ 		where 
+ 			member_id = #{memberId} and member_pw = #{memberPw}
+ 	</select>
+ 	
+ 	<insert id="joinMember" parameterType="m">
+ 		insert into member_tbl values(
+ 		member_tbl_seq.nextVal,
+ 		#{memberId},
+ 		#{memberPw},
+ 		#{memberName},
+ 		#{memberGender},
+ 		#{memberPhone},
+ 		#{memberEmail},
+ 		3,
+ 		to_char(sysdate,'YYYY-MM-DD'))
+ 	</insert>
+ 	
+ 	<select id="idChk" parameterType="string" resultType="m">
+ 		select 
+ 			member_id as memberId
+ 		from 
+ 			member_tbl 
+ 		where 
+ 			member_id = #{memberId}
+ 	</select>
+ 	
+ 	<select id="findMemberId" parameterType="m" resultType="m">
+ 		select
+ 			member_id as memberId
+ 		from 
+ 			member_tbl 
+ 		where 
+ 			member_name = #{memberName} and member_email = #{memberEmail}
+ 	</select>
+ 	
+ 	<select id="beforePwMember" parameterType="m" resultType="m">
+ 		select
+ 			member_no as memberNo
+ 		from 
+ 			member_tbl
+ 		where 
+ 			member_id = #{memberId} and member_pw = #{memberPw}
+ 	</select>
+ 	
+ 	<update id="updatePwMember" parameterType="m">
+ 		update 
+ 			member_tbl
+ 		set
+ 			member_pw = #{memberPw}
+ 		where
+ 			member_id = #{memberId}
+ 	</update>
+ 	
+ 	<insert id="sellerApplication" parameterType="_int">
+ 		insert into seller_application_tbl values(seller_application_seq.nextVal,#{_parameter},to_char(sysdate,'YYYY-MM-DD HH24:mi:ss'))
+ 	</insert>
+ 	
+ 	<delete id="cancelSeller">
+ 		delete from
+ 			seller_application_tbl
+ 		where
+ 			member_no = #{_parameter}
+ 	</delete>
+ 	
+ 	<select id="selectSellerApplication" parameterType="_int" resultType="m">
+ 		select
+ 			member_no as memberNo
+ 		from 
+ 			seller_application_tbl
+ 		where
+ 			member_no = #{_parameter}
+ 	</select>
+ 	
+ 	<update id="deleteMember">
+ 		update 
+ 			member_tbl
+ 		set
+ 			member_email = '',
+ 			member_grade = 4
+ 		where
+ 			member_no = #{_parameter}
+ 	</update>
+ 	
+ 	<select id="selectOrderList" parameterType="map" resultType="order">
+ 		select
+		    *
+		from
+		    (select 
+		        rownum as RNUM,n.* 
+		    from
+		        (select
+		 			order_no as orderNo,
+		 			member_no as memberNo,
+		 			order_all_price as orderAllPrice,
+		 			order_status as orderStatus,
+		 			order_date as orderDate,
+		 			order_product as orderProduct
+		 		from
+		 			order_tbl
+		 		where
+		 			member_no = #{memberNo}
+		        order by 1 desc)n)
+		where 
+			RNUM between #{start} and #{end}
+
+ 	</select>
+
+	<select id="selectTotalCount" parameterType="_int" resultType="_int">
+		select
+			count(*)
+		from
+			order_tbl
+		where
+			member_no = #{_parameter}
+	</select>
+
+
+<!-- 나의 관심상품에 이미 존재하는지 확인  -->
+	<select id="selectOneMyWishlist" parameterType="w" resultType="_int">
+		SELECT COUNT(*) FROM WISHLIST WHERE (MEMBER_ID = #{memberId})
+        <choose>
+			<when test="lesson_no == 0">
+				 AND (HOUSE_NO = #{house_no})
+			</when>
+			<when test="house_no == 0">
+				 AND (LESSON_NO = #{lesson_no})
+			</when>
+		</choose>
+	</select>
+
+
+<!-- 나의 관심상품이 몇 개나 있는지 확인  -->
+	<select id="selectCountMyWishlist" parameterType="string" resultType="_int">
+		SELECT COUNT(*) FROM WISHLIST WHERE (MEMBER_ID = #{_parameter})
+	</select>
+
+
+<!-- 나의 관심상품에 추가하기 -->
+	<insert id="insertMyWishlist" parameterType="w">
+		INSERT INTO WISHLIST VALUES (WISHLIST_SEQ.NEXTVAL, #{memberId}
+		<choose>
+			<when test="lesson_no == 0">, #{house_no}, ''</when>
+			<when test="house_no == 0">, '', #{lesson_no}</when>
+		</choose>
+		)
+ 	</insert>
+
+
+<!-- 상품페이지에서 관심상품 바로 삭제하기 -->
+ 	 <delete id="delistWishList" parameterType="w">
+ 		DELETE FROM WISHLIST WHERE MEMBER_ID = #{memberId}
+		<choose>
+			<when test="lesson_no == 0">AND HOUSE_NO = #{house_no}</when>
+			<when test="house_no == 0">AND LESSON_NO = #{lesson_no}</when>
+		</choose>
+ 	</delete>
+
+ 
+<!-- 나의 관심상품 목록을 가져오기  -->
+ 	<select id="selectAllWishList" parameterType="string" resultType="w">
+		select
+ 			w.wish_no as wishNo,
+ 			w.member_id as memberId,
+ 			w.lesson_no as lessonNo,
+ 			l.lesson_level as lessonLevel,
+ 			l.lesson_title as lessonTitle,
+ 			l.lesson_price as lessonPrice,
+ 			l.lesson_max_no as lessonMaxNo,
+ 			l.lesson_start_time as lessonStartTime,
+ 			l.lesson_end_time as lessonEndTime,
+ 			l.lesson_city as lessonCity,
+ 			l.lesson_info_pic as lessonInfoPic,
+ 			l.lesson_teacher as lessonTeacher,
+ 			l.lesson_status as lessonStatus,
+ 			w.house_no as houseNo,
+ 			h.house_title as houseTitle,
+ 			h.room_title as roomTitle,
+ 			h.house_city as houseCity,
+ 			h.house_address as houseAddress,
+ 			h.house_photo1 as housePhoto1,
+ 			h.room_capa as roomCapa,
+ 			h.house_price as housePrice,
+ 			h.house_status as houseStatus
+ 		from wishList w
+ 		left join lesson l on(l.lesson_no=w.lesson_no)
+ 		left join house h on(h.house_no=w.house_no)
+ 		where member_id=#{_parameter}
+ 		order by wish_no desc
+ 	</select>
+
+
+<!-- 나의 관심상품에서 삭제하기 -->
+ 	 <delete id="deleteWishList" parameterType="_int">
+ 		delete 
+ 		from wishlist
+ 		where wish_no=#{_parameter}
+ 	</delete>
+
+
+<!-- 회원탈퇴 시 나의 관심상품들 전부 삭제하기 -->
+ 	 <delete id="deleteMyWishLists" parameterType="string">
+ 		DELETE FROM WISHLIST WHERE MEMBER_ID=#{_parameter}
+ 	</delete>
+
+ 	
+ 	<select id="selectOneMember" parameterType="m" resultType="m">
+ 		select
+ 			member_no as memberNo,
+	 		member_id as memberId,
+	 		member_pw as memberPw,
+	 		member_name as memberName,
+	 		member_gender as memberGender,
+	 		member_phone as memberPhone,
+	 		member_email as memberEmail,
+	 		member_grade as memberGrade,
+	 		enroll_date as enrollDate
+ 		from 
+ 			member_tbl 
+ 		where
+ 			member_id = #{memberId} and member_email = #{memberEmail}
+ 	</select>
+ 	<update id="updateMember" parameterType="m">
+ 		update
+ 			 member_tbl
+ 		set
+ 			member_phone = #{memberPhone},
+ 			member_name = #{memberName}
+ 		where
+ 			member_no = #{memberNo} 
+ 	</update>
+ 	
+ 	<select id="selectProductList" parameterType="map" resultType="pr">
+ 	  select *
+        from(select rownum as rnum, ap.*
+        from (         select * from (select
+        	'강습' as productType,
+            lesson_no as productNo,
+			lesson_title as productTitle,
+			lesson_city as productCity,
+			lesson_info_pic as productPic,
+			lesson_status as productStatus,
+			lesson_score as productScore,
+			l.writer as productWriter
+        from lesson l
+        union
+        select
+        	'숙박' as productType,
+            house_no as productNo,
+			house_title as productTitle,
+			house_city as productCity,
+			house_photo1 as productPic,
+			house_status as productStatus,
+			house_score as productScore,
+			h.writer as productWriter
+        from house h)
+        where productStatus in(1,0) and productWriter = #{memberId}
+        order by productStatus desc, productNo desc) ap)
+        where rnum between #{start} and #{end}
+ 	</select>
+ 	
+ 	<select id="selectProductCount" parameterType="string" resultType="_int">
+         select 
+         	count(*) 
+         from 
+         	(select
+        	'강습' as productType,
+            lesson_no as productNo,
+			lesson_title as productTitle,
+			lesson_city as productCity,
+			lesson_info_pic as productPic,
+			lesson_status as productStatus,
+			lesson_score as productScore,
+			l.writer as productWriter
+        	from 
+        		lesson l
+        	union
+        	select
+	        	'숙박' as productType,
+	            house_no as productNo,
+				house_title as productTitle,
+				house_city as productCity,
+				house_photo1 as productPic,
+				house_status as productStatus,
+				house_score as productScore,
+				h.writer as productWriter
+        	from 
+        		house h)
+        where 
+        	productStatus in(1,0) 
+        and 
+        	productWriter = #{_parameter}
+ 	</select>
+
+
+
+
+<!-- 판매자별 모든 상품 목록 조회 -->
+	<select id="selectProductBySeller" parameterType="map" resultType="pr">
+        select *
+        from(select rownum as rnum, ap.*
+        from (         select * from (select
+        	'강습' as productType,
+            lesson_no as productNo,
+			lesson_title as productTitle,
+			lesson_city as productCity,
+			lesson_info_pic as productPic,
+			lesson_status as productStatus,
+			lesson_score as productScore,
+			l.writer as productWriter
+        from lesson l
+        union
+        select
+        	'숙박' as productType,
+            house_no as productNo,
+			house_title as productTitle,
+			house_city as productCity,
+			house_photo1 as productPic,
+			house_status as productStatus,
+			house_score as productScore,
+			h.writer as productWriter
+        from house h)
+        where productWriter = #{memberId}
+        order by productStatus desc, productNo desc) ap)
+        where rnum between #{start} and #{end}
+	</select>
+
+<!-- 판매자별 모든 상품의 개수 -->
+	<select id="selectProductCountBySeller" parameterType="string" resultType="_int">
+         select count(*) from (select
+        	'강습' as productType,
+            lesson_no as productNo,
+			l.writer as productWriter
+        from lesson l
+        union
+        select
+        	'숙박' as productType,
+            house_no as productNo,
+			h.writer as productWriter
+        from house h)
+        where productWriter = #{_parameter}
+        order by productNo desc
+	</select>
+
+
+<!-- 판매자별 강습 상품 목록 조회 -->
+	<select id="selectLessonBySeller" parameterType="map" resultType="l">
+		select *
+        from(select rownum as rnum, l.*
+        from (select
+			lesson_no as lessonNo,
+			lesson_level as lessonLevel,
+			lesson_title as lessonTitle,
+			lesson_price as lessonPrice,
+			lesson_max_no as lessonMaxNo,
+			lesson_score as lessonScore,
+			writer,
+			lesson_city as lessonCity,
+			lesson_status as lessonStatus,
+			lesson_info_pic as lessonInfoPic
+		from lesson
+        where writer = #{memberId}
+		order by lesson_no desc) l)
+        where rnum between #{start} and #{end}
+	</select>
+
+<!-- 판매자별 강습 상품의 개수 -->
+	<select id="selectLessonCountBySeller" parameterType="string" resultType="_int">
+		select count(*) from lesson where writer = #{_parameter}
+	</select>
+
+
+<!-- 판매자별 숙박 상품 목록 조회 -->
+	<select id="selectHouseBySeller" resultType="h">
+		select *
+        from(select rownum as rnum, h.*
+        from (select
+			house_no as houseNo,
+			house_title as houseTitle,
+			writer,
+			room_title as roomTitle,
+			house_price as housePrice,
+			house_score as houseScore,
+			room_capa as roomCapa,
+			house_city as houseCity,
+			house_status as houseStatus,
+			house_photo1 as housePhoto1
+		from house
+        where writer = #{memberId}
+		order by house_no desc) h)
+        where rnum between #{start} and #{end}
+	</select>
+
+<!-- 판매자별 숙박 상품의 개수 -->
+	<select id="selectHouseCountBySeller" parameterType="string" resultType="_int">
+		select count(*) from house where writer = #{_parameter}
+	</select>
+
+
+<!-- 판매자별 상품 목록 검색  -->
+	<select id="selectSearchProduct" parameterType="kr.co.admin.model.vo.SearchWithId" resultType="pr">
+         select * from (select
+        	'강습' as productType,
+            lesson_no as productNo,
+			lesson_title as productTitle,
+			lesson_city as productCity,
+			lesson_info_pic as productPic,
+			lesson_status as productStatus,
+			lesson_score as productScore,
+			l.writer as productWriter
+        from lesson l
+        union
+        select
+        	'숙박' as productType,
+            house_no as productNo,
+			house_title as productTitle,
+			house_city as productCity,
+			house_photo1 as productPic,
+			house_status as productStatus,
+			house_score as productScore,
+			h.writer as productWriter
+        from house h
+        )
+        <choose>
+			<when test="searchType.equals('na')">
+				where productTitle like
+				<foreach collection="keywords" item="keyword" separator="and productTitle like">
+		 			'%'||#{keyword}||'%'
+				</foreach>
+			</when>
+			<when test="searchType.equals('lo')">
+				where productCity like
+				<foreach collection="keywords" item="keyword" separator="and productCity like">
+		 			'%'||#{keyword}||'%'
+				</foreach>
+			</when>
+		</choose>
+		and productWriter = #{memberId}
+        order by productNo desc
+	</select>
+
+
+<!-- 판매자별 강습 상품 목록 검색  -->
+	<select id="selectSearchLesson" parameterType="kr.co.admin.model.vo.SearchWithId" resultType="l">
+	  select 
+	  		lesson_no as lessonNo,
+			lesson_level as lessonLevel,
+			lesson_title as lessonTitle,
+			lesson_price as lessonPrice,
+			lesson_max_no as lessonMaxNo,
+			writer,
+			lesson_city as lessonCity,
+			lesson_status as lessonStatus,
+			lesson_score as lessonScore,
+			lesson_info_pic as lessonInfoPic
+	  from lesson
+ 	    <choose>
+			<when test="searchType.equals('na')">
+	     	   where lesson_title like 
+				<foreach collection="keywords" item="keyword" separator="and lesson_title like">
+		 			'%'||#{keyword}||'%'
+				</foreach>
+			</when>
+			<when test="searchType.equals('le')">
+				where lesson_level like 
+				<foreach collection="keywords" item="keyword" separator="and lesson_level like">
+		 			'%'||#{keyword}||'%'
+				</foreach>
+			</when>
+			<when test="searchType.equals('lo')">
+				where lesson_city like 
+				<foreach collection="keywords" item="keyword" separator="and lesson_city like">
+		 			'%'||#{keyword}||'%'
+				</foreach>
+			</when>
+		</choose>
+		and writer = #{memberId}
+	    order by lesson_no desc 
+	</select>
+
+
+<!-- 판매자별 숙박 상품 목록 검색  -->
+	<select id="selectSearchHouse" parameterType="kr.co.admin.model.vo.SearchWithId" resultType="h">
+		select
+			house_no as houseNo,
+			house_title as houseTitle,
+			writer,
+			room_title as roomTitle,
+			house_price as housePrice,
+			house_score as houseScore,
+			room_capa as roomCapa,
+			house_city as houseCity,
+			house_status as houseStatus,
+			house_score as houseScore,
+			house_photo1 as housePhoto1
+		from house
+		<choose>
+			<when test="searchType.equals('na')">
+				where house_title like 
+				<foreach collection="keywords" item="keyword" separator="and house_title like">
+		 			'%'||#{keyword}||'%'
+				</foreach>
+			</when>
+			<when test="searchType.equals('rt')">
+				where room_title like 
+				<foreach collection="keywords" item="keyword" separator="and room_title like">
+		 			'%'||#{keyword}||'%'
+				</foreach>
+			</when>
+			<when test="searchType.equals('lo')">
+				where house_address like 
+				<foreach collection="keywords" item="keyword" separator="and house_address like">
+		 			'%'||#{keyword}||'%'
+				</foreach>
+			</when>
+		</choose>
+		and writer = #{memberId}
+		order by house_no desc
+	</select>
+</mapper>

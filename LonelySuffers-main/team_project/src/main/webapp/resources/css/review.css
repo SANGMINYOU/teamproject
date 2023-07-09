@@ -1,0 +1,223 @@
+@charset "UTF-8";
+
+.button-74 {
+    background-color: #006bd6;
+    border: 2px solid #006bd6;
+    border-radius: 30px;
+    color: #fff;
+    cursor: pointer;
+    display: inline-block;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 0 18px;
+    line-height: 30px;
+    text-align: center;
+    text-decoration: none;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    transition-duration: 0.2s;
+}
+
+.button-74:hover {
+    background-color: #fff;
+    color: #3ac5c8;
+}
+
+.button-74:active {
+    box-shadow: #422800 2px 2px 0 0;
+    transform: translate(2px, 2px);
+}
+
+@media (min-width: 768px) {
+    .button-74 {
+    min-width: 100px;
+    padding: 0 15px;
+    }
+}
+
+.button-73 {
+    background-color: #006bd6;
+    border: 2px solid #006bd6;
+    border-radius: 30px;
+    color: #fff;
+    cursor: pointer;
+    display: inline-block;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 0 18px;
+    line-height: 30px;
+    text-align: center;
+    text-decoration: none;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    transition-duration: 0.2s;
+}
+
+.button-73:hover {
+    background-color: #fff;
+    color: #3ac5c8;
+}
+
+.button-73:active {
+    box-shadow: #422800 2px 2px 0 0;
+    transform: translate(2px, 2px);
+}
+
+@media (min-width: 768px) {
+    .button-73 {
+    min-width: 50px;
+    padding: 0 15px;
+    }
+}
+
+
+.ratingTap {
+    cursor: pointer;
+    font-size: 30px;
+    color: orange;
+    display: block;
+    width: 40px;
+    height: 40px;
+    line-height: 50px;
+    text-align: center;
+    float: left;
+    transition: all 0.2s;
+    text-shadow: 0 3px 3px darken(#34495e, 5%);
+}
+
+.ratingTap:hover {
+    font-size: 40px;
+    color: orange;
+    text-shadow: 0 0 5px lighten(#34495e, 50%);
+}
+
+.ratingTap:before {
+    margin-right: 5px;
+    display: inline;
+    width: auto;
+    height: auto;
+    line-height: normal;
+    vertical-align: baseline;
+    margin-top: 0;
+    font-family: FontAwesome;
+    font-weight: normal;
+    font-style: normal;
+    text-decoration: inherit;
+    -webkit-font-smoothing: antialiased;
+    content: "\f005";
+}
+
+input:checked + .ratingTap ~ .ratingTap:before {
+    content: "\f006";
+}
+
+[name="rating"], [name="updateRating"] {
+    display: none;
+}
+
+#reviewWrapper {
+    display: inline-block;
+}
+
+#reviewWrapper:hover label:before {
+    content: "\f005";
+}
+
+#reviewWrapper label:hover ~ label:before {
+    content: "\f006";
+}
+
+#reviewModelWrapper {
+    display: inline-block;
+}
+
+#reviewModelWrapper:hover label:before {
+    content: "\f005";
+}
+
+#reviewModelWrapper label:hover ~ label:before {
+    content: "\f006";
+}
+
+.reviewWriteView{
+    border: none;
+    border-bottom: 2px solid #006bd6;
+    border-right: 2px solid #006bd6;
+    outline: 0;
+    resize: none;
+}
+
+.reviewListView{
+    background-color: #3ac5c8;
+    color: #fff;
+    text-align: center;
+}
+
+.reviewListView> th{
+    border: none;
+    text-align: center;
+    font-weight: bold;
+    padding-bottom: 10px;
+    padding-top: 10px;
+}
+.reviewListView> th:first-child{
+    border-top-left-radius: 5px;
+
+}
+.reviewListView> th:last-child{
+    border-top-right-radius: 5px;
+}
+
+.reviewModalContent{
+    border-bottom: 1px solid #006bd6;
+}
+
+.reviewModalContent>td{
+    padding: 5px;
+}
+
+.reviewModalBtn{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.container1 {
+    max-height: 300px; /* 초기 높이값 */
+    overflow: hidden;
+    position: relative;
+    height: 100%;
+}
+
+
+.show-more {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 840px;
+    background-color: #fff;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.show-more::before {
+    content: '▼';
+    display: inline-block;
+    margin-right: 5px;
+    transform: rotate(0deg);
+    transition: transform 0.3s ease-in-out;
+}
+
+.container1.show-more-open .show-more::before {
+    transform: rotate(180deg);
+}
+
+.container1.show-more-open {
+    max-height: 100%;
+}
+
+.trans5:hover{
+    transform: scale(3, 3);
+}
+

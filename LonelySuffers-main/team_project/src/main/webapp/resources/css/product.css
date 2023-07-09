@@ -1,0 +1,144 @@
+/****************************************
+
+　　　　　　　　　　house 및 lesson 용
+
+****************************************/
+
+.clickToLarger {
+	width: 80px;
+	height: 80px;
+}
+.clickToLarger:hover { cursor: pointer; }
+.onViewing { border: 4px solid #3ac5c8; }
+.product-detail>div{
+	margin-top:20px;
+	margin-bottom:20px;
+}
+.nav-item { background-color: #3ac5c8;}
+.nav-link { color: #ffffff; }
+.inquiryTitleText:hover {
+	cursor: pointer;
+}
+.expandedTr-inq>td{
+	background-color: #ebf2f9;
+}
+.expandedTr-ans>td{
+	background-color: #f0f5f5;
+}
+.expandedTr-ansI>td{
+	background-color: #f0ffff;
+}
+.inquiryTd {
+	text-align: right;
+}
+.pagination {
+	text-align: center;
+}
+.displayForSeller {
+}
+.displayForGeneralMember {
+}
+
+
+.toggleWishList {
+  position: relative;
+  width: 140px;
+  height: 60px;
+  padding: 0px;
+  border: none;
+  box-sizing: border-box;
+}
+.toggleWishList > div {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  line-height: 25px;
+  transition: .5s ease;
+}
+.toggleWishList > input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: none;
+  opacity: 0;
+}
+.toggleWishList input[type=checkbox]:checked ~ div {
+  background-color: #fff100;
+}
+
+
+
+.eachProduct {
+	height: 440px;
+	float: left;
+	padding: 30px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,0.4);
+}
+.eachProduct:hover {
+  box-shadow: 2px 2px 10px rgba(0,0,0,0.4);
+  cursor: pointer;
+}
+.pagination {
+	text-align: center;
+}
+.optionIcons {
+	 text-align: right;
+}
+.optionIcons > img {
+	width: 30px;
+}
+#shownForm * {
+	display: inline-block;
+	margin-bottom: 20px;
+}
+
+
+#half-stars-example {
+
+  /* use display:inline-flex to prevent whitespace issues. alternatively, you can put all the children of .rating-group on a single line */
+  .rating-group {
+    display: inline-flex;
+  }
+  
+  /* hide radio inputs */
+  .rating__input {
+   position: absolute !important;
+   left: -9999px !important;
+  }
+
+  /* set icon padding and size */
+  .rating__label {
+    /* if you change the left/right padding, update the margin-right property of .rating__label--half as well. */
+    padding: 0 0.1em;
+    font-size: 2rem;
+  }
+
+  /* add padding and positioning to half star labels */
+  .rating__label--half {
+    padding-right: 0;
+    margin-right: -0.6em;
+    z-index: 2;
+  }
+  
+  /* set default star color */
+  .rating__icon--star {
+    color: orange;
+  }
+  
+  /* set color of none icon when unchecked */
+  .rating__icon--none {
+    color: #eee;
+  }
+
+  /* if none icon is checked, make it red */
+  .rating__input--none:checked + .rating__label .rating__icon--none {
+    color: red;
+  }
+
+  /* if any input is checked, make its following siblings grey */
+  .rating__input:checked ~ .rating__label .rating__icon--star {
+    color: #ddd;
+  }
+}

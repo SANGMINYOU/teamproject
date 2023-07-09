@@ -1,0 +1,303 @@
+input[type=text],input[type=password]{
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    padding: 4px 8px;
+}
+
+.content-title>.waveEffectWord-back,.content-title>.waveEffectWord-front{
+    font-family: 'Delicious Handrawn', cursive !important;
+    font-size: 50px;
+    line-height: 50px;
+    padding-top: 10px;
+    padding-left: 25px;
+}
+
+.content-title{
+    margin: 0 auto;
+    text-align: center;
+    font-size: 30px;
+    FONT-WEIGHT: 900;
+    width: 250px;
+    height: 70px;
+    line-height: 70px;
+    border-radius: 10px;
+    box-shadow: -5px -5px 15px #FFF, 5px 5px 15px #a8aaaf;
+}
+
+.longinput{
+    width: 300px;
+
+}
+
+input[type=radio]{
+    display: none;
+}
+
+#pwChkSpan{
+        color : red;
+}
+
+.memberGender{
+    width: 100px;
+    height: 60px;
+    text-align: center;
+    line-height: 60px;
+    cursor: pointer;
+}
+.memberGender>.material-symbols-outlined{
+    transition: all 0.5s;
+    border-radius: 10px;
+    font-size: 60px;
+    color : #aaaaaa;
+}
+
+.memberGender>.material-symbols-outlined:hover{
+    color : #666666;
+
+}
+
+.genderClick>.material-symbols-outlined{
+    color : #222222;
+    /* background-color: #666; */
+    border-radius: 10px;
+    box-shadow: -2px -2px 5px #f5f4f4, 2px 2px 5px #000;
+}
+
+.modal-header, .close {
+    background: -webkit-linear-gradient(45deg, #3ac5c8 1%, #0b509e 100%);
+    background: linear-gradient(45deg, #3ac5c8 1%, #0b509e 100%);
+    color:white !important;
+    text-align: center;
+    font-size: 30px;
+}
+
+.modal-header>h4{
+    color:white !important;
+    text-align: center;
+    font-size: 30px;
+}
+
+  .modal-footer {
+    background-color: #f9f9f9;
+  }
+
+    .content{
+        width: 700px;
+        padding: 30px 30px;
+        margin: 0 auto;
+        background-color: #efeded8c;
+        border-radius: 10px;
+        box-shadow: -5px -5px 15px #FFF, 5px 5px 15px #a8aaaf;
+    }
+
+    .customInput > div {
+        position: relative;
+        margin-left: 0px;
+        margin-top: 50px;
+        margin-bottom: 30px;
+        display: flex; /* 요소를 수평으로 배치할 수 있게 합니다. */
+        align-items: center; /* 요소들을 수직 방향으로 정렬합니다. */
+    }
+    
+    .customInput > div > input {
+        font-size: 15px;
+        color: #222222;
+        width: 300px;
+        border: none;
+        border-bottom: solid #aaaaaa 1px;
+        padding-bottom: 7px;
+        padding-top: 5px;
+        padding-left: 20px;
+        position: relative;
+        background: none;
+        z-index: 5;
+        border-radius: 10px;
+        box-shadow: -5px -5px 20px #FFF, 5px 5px 15px #a8aaaf;
+        margin-right: 10px; /* input과 button 사이의 간격 조절 */
+    }
+    
+    .customInput > div > button ,.joinBtn>button,select{
+        font-size: 15px;
+        color: #000;
+        background-color: #efeded8c;
+        border: none;
+        padding: 5px 10px;
+        font-weight: 600;
+        border-radius: 10px;
+        box-shadow: -5px -5px 15px #FFF, 5px 5px 15px #a8aaaf;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .customInput > div > button:hover ,.joinBtn>button:hover,select:hover{
+        box-shadow: -2px -2px 5px #FFF, 2px 2px 5px #000;
+    }
+    .customInput > div > button:active ,.joinBtn>button:active,select:active,.memberGender>span:hover{
+    box-shadow: inset 1px 1px 2px #a8aaaf, inset -1px -1px 2px #FFF;
+    }
+    .customInput > div > input:hover ,.customInput > .customShort > .customShortInput:hover{ color: #aaaaaa; 
+        box-shadow: inset 1px 1px 2px #cdced1, inset -1px -1px 2px #FFF;
+    } 
+    
+    .customInput > div > input:focus ,.customInput > .customShort > .customShortInput:focus{ outline: none; 
+        box-shadow: inset 3px 3px 6px #cbced1, inset -6px -6px 6px white;
+    }
+    
+    .customInput > div > span {
+        display: block;
+        position: absolute;
+        bottom: 0;
+        left: 0%;
+        background-color: #666;
+        width: 0;
+        height: 2px;
+        border-radius: 2px;
+        transition: 0.5s;
+    }
+    
+    .customInput > div > label {
+        position: absolute;
+        color: #aaa;
+        left: 10px;
+        font-size: 20px;
+        bottom: 2px;
+        transition: all .2s;
+    }
+    
+    .customInput > div > input:focus ~ label, .customInput > div > input:valid ~ label {
+        font-size: 16px;
+        bottom: 40px;
+        color: #666;
+        font-weight: bold;
+    }
+    
+    .customInput > div > input:focus ~ span, .customInput > div > input:valid ~ span {
+        width: 300px;
+
+    }
+
+    .customInput > .customShort > .customShortInput {
+        font-size: 15px;
+        color: #222222;
+        width: 175px;
+        border: none;
+        border-bottom: solid #aaaaaa 1px;
+        padding-bottom: 7px;
+        padding-top: 5px;
+        padding-left: 20px;
+        position: relative;
+        background: none;
+        z-index: 5;
+        border-radius: 10px;
+        box-shadow: -5px -5px 20px #FFF, 5px 5px 15px #a8aaaf;
+        margin-right: 0px; /*input과 button 사이의 간격 조절*/
+    }
+
+    .customInput > .customShort > input:focus ~ label, .customInput > .customShort > input:valid ~ label {
+        font-size: 16px;
+        bottom: 40px;
+        color: #666;
+        font-weight: bold;
+    }
+
+    .customInput > .customShort > input:focus ~ span, .customInput > .customShort > input:valid ~ span {
+        width: 369.45px;
+    }
+
+    .customInput > .customShort > label {
+        position: absolute;
+        color: #aaa;
+        left: 10px;
+        font-size: 20px;
+        bottom: 2px;
+        transition: all .2s;
+    }
+
+    .emailSelect{
+        margin-right: 5px;
+        font-weight: 600;
+    }
+
+    .emailSelect>option{
+        font-weight: 600;
+    }
+
+    .emailSelect>option:hover{
+       cursor:pointer;
+    }
+
+    .customInput > .customShort > .email2 {
+        font-size: 15px;
+        color: #222222;
+        width: 175px;
+        border: none;
+        border-bottom: solid #aaaaaa 1px;
+        padding-bottom: 7px;
+        position: relative;
+        background: none;
+        z-index: 5;
+        margin-right: 10px; /*input과 button 사이의 간격 조절*/
+        left: 0%;
+        transition: all .2s;
+    }
+
+    .customShort>p{
+        margin: 0px;
+        height: 41px;
+        font-size: 20px;
+        line-height: 29px;
+        padding-bottom: 10px;
+        margin-left: 7px;
+        margin-right: 7px;
+        font-weight: 600;
+    }
+
+    .customInput>.joinBtn{
+        margin: 0 auto;
+        justify-content: center;
+    }
+
+    .customInput>.joinBtn>button{
+        width: 100px;
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+
+    .modal-body>form>.btn-success,.customInput>.btn-success{
+        background: -webkit-linear-gradient(45deg, #3ac5c8 1%, #0b509e 100%);
+        background: linear-gradient(45deg, #3ac5c8 1%, #0b509e 100%);
+        border-color: rgba(255, 255, 255, .15);
+      }
+    
+      .customEmailCode {
+        display: block;
+        width: 100%;
+        margin: 2em auto;
+        border: none;
+        outline: none;
+        padding: 0 !important;
+        padding-bottom: 5px !important;
+        width: calc(8 * (1ch + 0.7ch));
+        background: repeating-linear-gradient(90deg, 
+            dimgrey 0, dimgrey 1ch, 
+            transparent 0, transparent 1.7ch) 
+            0 100%/ calc(8 * (1ch + 0.7ch) - 0.7ch) 2px no-repeat;
+        font: 5ch droid sans mono, consolas, monospace;
+        letter-spacing: 0.7ch;
+    
+    }
+    .customEmailCode:focus{
+        outline: none;
+        color: dodgerblue;
+    }
+
+    .inputVaild:valid{
+        transition: all .2s;
+        box-shadow: -2px -2px 5px #f5f4f4, 2px 2px 5px #000 !important;
+        font-weight: 600;
+      }
+
+      .email1:valid{
+        transition: all .2s;
+        box-shadow: -2px -2px 5px #f5f4f4, 2px 2px 5px #000 !important;
+      }

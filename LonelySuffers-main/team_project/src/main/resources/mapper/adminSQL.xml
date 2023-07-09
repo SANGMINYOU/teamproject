@@ -1,0 +1,873 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="admin">
+	<select id="selectTopLesson" resultType="l">
+	    <![CDATA[
+		select lessonNo, lessonScore, lessonInfoPic
+  		from (
+         select lesson_no as lessonNo,
+			lesson_score as lessonScore,
+			lesson_info_pic as lessonInfoPic
+           FROM lesson
+          order by lesson_score desc nulls last
+      	)
+ 		where rownum<=4
+ 		]]>
+	</select>
+	
+	<select id="selectTopHouse" resultType="h">
+		<![CDATA[
+		select houseNo, houseScore, housePhoto1
+  		from (
+         select
+			house_no as houseNo,
+			house_score as houseScore,
+			house_photo1 as housePhoto1
+			from house
+          order by house_score desc nulls last
+      	)
+ 		where rownum<=4
+ 		]]>
+	</select>
+
+	<select id="selectAllMember" parameterType="map" resultType="m">
+		select *
+        from(select rownum as rnum, m.*
+        from (select
+			member_name as memberName,
+			member_id as memberId,
+			member_gender as memberGender,
+			member_phone as memberPhone,
+			member_email as memberEmail,
+			member_grade as memberGrade,
+			enroll_date as enrollDate
+		from member_tbl
+		where member_grade != 4
+		order by member_no desc) m)
+        where rnum between #{start} and #{end}
+	</select>
+	
+	<select id="selectMemberCount" resultType="_int">
+		select 
+			count(*)
+		from member_tbl
+		where member_grade != 4
+	</select>
+	
+	<update id="updateMemberGrade" parameterType="m">
+		update member_tbl set
+			member_grade=#{memberGrade}
+		where member_id=#{memberId}
+	</update>
+	
+	<update id="deleteMember" parameterType="string">
+		update member_tbl set
+			member_grade=4
+		where member_id=#{memberId}
+	</update>
+	
+	<select id="selectSearchMember" parameterType="string" resultType="m">
+		select
+			member_name as memberName,
+			member_id as memberId,
+			member_gender as memberGender,
+			member_phone as memberPhone,
+			member_email as memberEmail,
+			member_grade as memberGrade,
+			enroll_date as enrollDate
+		from member_tbl
+		where member_id like '%'||#{searchMemberId}||'%'
+	</select>
+	
+	<select id="selectAllSellerApplication" parameterType="map" resultType="m">
+		select *
+        from(select rownum as rnum, sa.*
+        from (select
+			member_no as memberNo,
+			member_name as memberName,
+			member_id as memberId,
+			member_gender as memberGender,
+			member_phone as memberPhone,
+			member_email as memberEmail,
+			member_grade as memberGrade,
+			enroll_date as enrollDate,
+			application_date as applicationDate
+		from member_tbl
+		join seller_application_tbl using(member_no)
+		where member_grade != 4
+		order by application_date desc) sa)
+        where rnum between #{start} and #{end}
+	</select>
+	
+	<select id="selectSellerAppCount" resultType="_int">
+		select count(*)
+		from seller_application_tbl
+		join member_tbl using(member_no)
+		where member_grade != 4
+	</select>
+	
+	<select id="selectOneSellerApplication" parameterType="string" resultType="m">
+		select
+			member_no as memberNo,
+			member_name as memberName,
+			member_id as memberId,
+			member_gender as memberGender,
+			member_phone as memberPhone,
+			member_email as memberEmail,
+			member_grade as memberGrade,
+			enroll_date as enrollDate,
+			application_date as applicationDate
+		from member_tbl
+		join seller_application_tbl using(member_no)
+		where member_id=#{searchMemberId}
+		order by application_date desc
+	</select>
+	
+	<update id="updateMemberGradeSeller" parameterType="string">
+		update member_tbl set
+			member_grade=2
+		where member_id=#{memberId}
+	</update>
+	
+	<delete id="deleteSellerApplication" parameterType="_int">
+		delete 
+		from seller_application_tbl
+		where member_no=#{memberNo}
+	</delete>
+	
+	<select id="selectAllNewProduct" resultType="pr">
+         select *
+        from(select rownum as rnum, a.*
+        from (select * from (select
+        	'강습' as productType,
+            lesson_no as productNo,
+			lesson_title as productTitle,
+			lesson_city as productCity,
+			lesson_info_pic as productPic,
+			lesson_status as productStatus,
+			lesson_score as productScore,
+			l.writer as productWriter
+        from lesson l
+        union
+        select
+        	'숙박' as productType,
+            house_no as productNo,
+			house_title as productTitle,
+			house_city as productCity,
+			house_photo1 as productPic,
+			house_status as productStatus,
+			house_score as productScore,
+			h.writer as productWriter
+        from house h)
+        where productStatus = -1
+        order by productStatus desc, productNo desc) a)
+        where rnum between #{start} and #{end}
+	</select>
+	
+	<select id="selectNewProductCount" resultType="_int">
+        select count(*) from (select
+        	'강습' as productType,
+            lesson_no as productNo,
+			lesson_title as productTitle,
+			lesson_city as productCity,
+			lesson_info_pic as productPic,
+			lesson_status as productStatus,
+			lesson_score as productScore,
+			l.writer as productWriter
+        from lesson l
+        union
+        select
+        	'숙박' as productType,
+            house_no as productNo,
+			house_title as productTitle,
+			house_city as productCity,
+			house_photo1 as productPic,
+			house_status as productStatus,
+			house_score as productScore,
+			h.writer as productWriter
+        from house h)
+        where productStatus = -1
+        order by productStatus desc, productNo desc
+	</select>
+	
+	<select id="selectAllProduct" parameterType="map" resultType="pr">
+        select *
+        from(select rownum as rnum, ap.*
+        from (         select * from (select
+        	'강습' as productType,
+            lesson_no as productNo,
+			lesson_title as productTitle,
+			lesson_city as productCity,
+			lesson_info_pic as productPic,
+			lesson_status as productStatus,
+			lesson_score as productScore,
+			l.writer as productWriter
+        from lesson l
+        union
+        select
+        	'숙박' as productType,
+            house_no as productNo,
+			house_title as productTitle,
+			house_city as productCity,
+			house_photo1 as productPic,
+			house_status as productStatus,
+			house_score as productScore,
+			h.writer as productWriter
+        from house h)
+        where productStatus in(1,0)
+        order by productStatus desc, productNo desc) ap)
+        where rnum between #{start} and #{end}
+	</select>
+	
+	<select id="selectAllProductCount" parameterType="map" resultType="_int">
+         select count(*) from (select
+        	'강습' as productType,
+            lesson_no as productNo,
+			lesson_title as productTitle,
+			lesson_city as productCity,
+			lesson_info_pic as productPic,
+			lesson_status as productStatus,
+			lesson_score as productScore,
+			l.writer as productWriter
+        from lesson l
+        union
+        select
+        	'숙박' as productType,
+            house_no as productNo,
+			house_title as productTitle,
+			house_city as productCity,
+			house_photo1 as productPic,
+			house_status as productStatus,
+			house_score as productScore,
+			h.writer as productWriter
+        from house h)
+        where productStatus in(1,0)
+	</select>
+	
+	<select id="selectSearchLesson" parameterType="s" resultType="l">
+	  select 
+	  		lesson_no as lessonNo,
+			lesson_level as lessonLevel,
+			lesson_title as lessonTitle,
+			lesson_price as lessonPrice,
+			lesson_max_no as lessonMaxNo,
+			writer,
+			lesson_city as lessonCity,
+			lesson_status as lessonStatus,
+			lesson_score as lessonScore,
+			lesson_info_pic as lessonInfoPic
+	  from lesson
+ 	    <choose>
+	      <when test='searchType.equals("n")'>
+	      	<!-- 한 글자는 문자 취급될 수 있기 때문에 ""큰따옴표로 묶어야함 -->
+	        where lesson_title like 
+				<foreach collection="keywords" item="keyword" separator="and lesson_title like">
+		 			'%'||#{keyword}||'%'
+				</foreach>
+	      </when>
+	      <when test='searchType.equals("s")'>
+	        where writer like 
+				<foreach collection="keywords" item="keyword" separator="and writer like">
+		 			'%'||#{keyword}||'%'
+				</foreach>
+	      </when>
+	      <when test="searchType.equals('le')">
+	        where lesson_level like 
+				<foreach collection="keywords" item="keyword" separator="and lesson_level like">
+		 			'%'||#{keyword}||'%'
+				</foreach>
+	      </when>
+	      <when test="searchType.equals('lo')">
+	        where lesson_city like 
+				<foreach collection="keywords" item="keyword" separator="and lesson_city like">
+		 			'%'||#{keyword}||'%'
+				</foreach>
+	      </when>
+	    </choose>
+	    order by lesson_status desc, lesson_no desc 
+	</select>
+	
+	<select id="selectSearchHouse" parameterType="s" resultType="h">
+		select
+			house_no as houseNo,
+			house_title as houseTitle,
+			writer,
+			room_title as roomTitle,
+			house_price as housePrice,
+			house_score as houseScore,
+			room_capa as roomCapa,
+			house_city as houseCity,
+			house_status as houseStatus,
+			house_score as houseScore,
+			house_photo1 as housePhoto1
+		from house
+		<choose>
+			<when test='searchType.equals("n")'>
+				where house_title like 
+				<foreach collection="keywords" item="keyword" separator="and house_title like">
+		 			'%'||#{keyword}||'%'
+				</foreach>
+			</when>
+			<when test='searchType.equals("s")'>
+				where writer like 
+				<foreach collection="keywords" item="keyword" separator="and writer like">
+		 			'%'||#{keyword}||'%'
+				</foreach>
+			</when>
+			<when test="searchType.equals('rt')">
+				where room_title like 
+				<foreach collection="keywords" item="keyword" separator="and room_title like">
+		 			'%'||#{keyword}||'%'
+				</foreach>
+			</when>
+			<when test="searchType.equals('lo')">
+				where house_address like 
+				<foreach collection="keywords" item="keyword" separator="and house_address like">
+		 			'%'||#{keyword}||'%'
+				</foreach>
+			</when>
+		</choose>
+		order by house_status desc, house_no desc
+	</select>
+	
+	<select id="selectSearchProduct" parameterType="s" resultType="pr">
+         select * from (select
+        	'강습' as productType,
+            lesson_no as productNo,
+			lesson_title as productTitle,
+			lesson_city as productCity,
+			lesson_info_pic as productPic,
+			lesson_status as productStatus,
+			lesson_score as productScore,
+			l.writer as productWriter
+        from lesson l
+        union
+        select
+        	'숙박' as productType,
+            house_no as productNo,
+			house_title as productTitle,
+			house_city as productCity,
+			house_photo1 as productPic,
+			house_status as productStatus,
+			house_score as productScore,
+			h.writer as productWriter
+        from house h
+        )
+        <choose>
+			<when test='searchType.equals("n")'>
+				where productTitle like
+				<foreach collection="keywords" item="keyword" separator="and productTitle like">
+		 			'%'||#{keyword}||'%'
+				</foreach>
+			</when>
+			<when test='searchType.equals("s")'>
+				where productWriter like
+				<foreach collection="keywords" item="keyword" separator="and productWriter like">
+		 			'%'||#{keyword}||'%'
+				</foreach>
+			</when>
+			<when test="searchType.equals('lo')">
+				where productCity like
+				<foreach collection="keywords" item="keyword" separator="and productCity like">
+		 			'%'||#{keyword}||'%'
+				</foreach>
+			</when>
+		</choose>
+        order by productStatus desc, productNo desc
+	</select>
+	
+	<select id="selectAllLesson" parameterType="map" resultType="l">
+		select *
+        from(select rownum as rnum, l.*
+        from (select
+			lesson_no as lessonNo,
+			lesson_level as lessonLevel,
+			lesson_title as lessonTitle,
+			lesson_price as lessonPrice,
+			lesson_max_no as lessonMaxNo,
+			lesson_score as lessonScore,
+			writer,
+			lesson_city as lessonCity,
+			lesson_status as lessonStatus,
+			lesson_info_pic as lessonInfoPic
+		from lesson
+		where lesson_status in(0,1)
+		order by lesson_status desc, lesson_no desc) l)
+        where rnum between #{start} and #{end}
+	</select>
+	
+	<select id="selectAllHouse" resultType="h">
+		select *
+        from(select rownum as rnum, h.*
+        from (select
+			house_no as houseNo,
+			house_title as houseTitle,
+			writer,
+			room_title as roomTitle,
+			house_price as housePrice,
+			house_score as houseScore,
+			room_capa as roomCapa,
+			house_city as houseCity,
+			house_status as houseStatus,
+			house_photo1 as housePhoto1
+		from house
+		where house_status in(0,1)
+		order by house_status desc, house_no desc) h)
+        where rnum between #{start} and #{end}
+	</select>
+	
+	<select id="selectLessonCount" resultType="_int">
+		select
+			count(*)
+		from lesson
+		where lesson_status=1 or lesson_status=0
+	</select>
+	
+	<select id="selectHouseCount" resultType="_int">
+		select
+			count(*)
+		from house
+		where house_status=1 or house_status=0
+	</select>
+	
+	<update id="updateLessonStatus" parameterType="l">
+		update lesson set
+			lesson_status=#{lessonStatus}
+		where lesson_no=#{lessonNo}
+	</update>
+	
+	<update id="updateHouseStatus" parameterType="h">
+		update house set
+			house_status=#{houseStatus}
+		where house_no=#{houseNo}
+	</update>
+	
+	<select id="selectNewLesson" parameterType="map" resultType="l">
+		select *
+        from(select rownum as rnum, nl.*
+        from (select 
+			lesson_no as lessonNo,
+			lesson_level as lessonLevel,
+			lesson_title as lessonTitle,
+			lesson_price as lessonPrice,
+			lesson_max_no as lessonMaxNo,
+			writer,
+			lesson_city as lessonCity,
+			lesson_status as lessonStatus,
+			lesson_info_pic as lessonInfoPic
+		from lesson
+		where lesson_status=-1
+		order by lesson_no desc) nl)
+        where rnum between #{start} and #{end}
+	</select>
+	
+	<select id="selectNewHouse" parameterType="map" resultType="h">
+		select *
+        from(select rownum as rnum, nh.*
+        from (select 
+			house_no as houseNo,
+			house_title as houseTitle,
+			writer,
+			room_title as roomTitle,
+			house_price as housePrice,
+			room_capa as roomCapa,
+			house_city as houseCity,
+			house_status as houseStatus,
+			house_photo1 as housePhoto1
+		from house
+		where house_status=-1
+		order by house_no desc) nh)
+        where rnum between #{start} and #{end}
+	</select>
+	
+	<select id="selectNewLessonCount" resultType="_int">
+		select count(*)
+		from lesson
+		where lesson_status=-1
+	</select>
+	
+	<select id="selectNewHouseCount" resultType="_int">
+		select count(*)
+		from house
+		where house_status=-1
+	</select>
+	
+	<update id="updateLessonStopSelling" parameterType="_int">
+		update lesson set
+			lesson_status=0
+		where lesson_no=#{_parameter}
+	</update>
+	
+	<update id="updateHouseStopSelling" parameterType="_int">
+		update house set
+			house_status=0
+		where house_no=#{_parameter}
+	</update>
+	
+	<update id="updateApproveLesson" parameterType="_int">
+		update lesson set
+			lesson_status=1,
+			reject_comment=''
+		where lesson_no=#{_parameter}
+	</update>
+	
+	<update id="updateApproveHouse" parameterType="_int">
+		update house set
+			house_status=1,
+			reject_comment=''
+		where house_no=#{_parameter}
+	</update>
+	
+	<update id="updateReturnLesson" parameterType="kr.co.admin.model.vo.RejectProduct">
+		update lesson set
+			lesson_status=-2,
+			reject_comment=#{returnReason}
+		where lesson_no=#{productNo}
+	</update>
+	
+	<update id="updateReturnHouse" parameterType="kr.co.admin.model.vo.RejectProduct">
+		update house set
+			house_status=-2,
+			reject_comment=#{returnReason}
+		where house_no=#{productNo}
+	</update>
+	
+	<select id="selectAllOrder" parameterType="map" resultType="order">
+		select *
+        from(select rownum as rnum, ao.*
+        from (select 
+			order_no as orderNo,
+			member_no as memberNo,
+			order_all_price as orderAllPrice,
+			decode(order_status, 1, '결제완료', 0, '결제취소') as orderStatusString,
+			order_date as orderDate,
+			decode(order_product, 1, '강습', 2, '숙박', 3, '강습+숙박') as orderProductString,
+			member_id as memberId
+		from order_tbl
+		join member_tbl using(member_no)
+		order by order_no desc) ao)
+        where rnum between #{start} and #{end}
+	</select>
+	
+	<select id="selectOrderCount" resultType="_int">
+		select
+			count(*) 
+		from order_tbl
+	</select>
+	
+	<delete id="deleteOrder" parameterType="_int">
+		delete
+		from order_tbl
+		where order_no=#{_parameter}
+	</delete>
+	
+	<select id="selectOrderDetailInfo" parameterType="_int" resultType="order">
+		select
+			order_no as orderNo,
+			member_id as memberId,
+			order_all_price as orderAllPrice,
+			order_date as orderDate
+		from order_tbl
+		join member_tbl using(member_no)
+		where order_no=#{_parameter}
+	</select>
+	
+	<select id="selectOrderDetail" parameterType="_int" resultType="order">
+	select 
+            order_detail_no as orderDetailNo,
+		    order_no as orderNo, 
+		    order_date as orderDate, 
+		    decode(order_status,1,'결제완료',0,'결제취소') as orderStatusString,
+		    member_id as memberId, 
+            l.lesson_no as lessonNo,
+		    lesson_level as lessonNameLevel, 
+		    lesson_title as lessonTitle, 
+		    lesson_city as lessonCity, 
+		    lesson_start_time as lessonStartTime, 
+		    lesson_end_time as lessonEndTime,
+		    lesson_teacher as lessonTeacher,
+		    lesson_info_pic as lessonInfoPic,
+            h.house_no as houseNo,
+		    house_title as houseTitle,
+		    house_city as houseCity,
+		    h.writer as houseWriter,
+		    room_title as roomTitle,
+		    house_barbecue as houseBarbecue,
+		    house_party as houseParty,
+		    house_photo1 as housePhoto1,
+		    book_start_date as bookStartDate,
+		    book_end_date as bookEndDate,
+		    order_all_price as orderAllPrice,
+            lesson_book_price as lessonBookPrice,
+            room_book_price as roomBookPrice
+		from order_detail od
+		left join order_tbl o using(order_no)
+		left join member_tbl m using(member_no)
+		left join lesson l on(od.lesson_no=l.lesson_no)
+		left join house h on(od.house_no=h.house_no)
+		left join room_book rb using(room_book_no)
+        left join lesson_book l on(od.lesson_book_no=l.lesson_book_no)
+		where order_no= #{_parameter}
+		order by order_detail_no
+	</select>
+	
+	<select id="selectOrderDetailCount" parameterType="_int" resultType="_int">
+		select
+			count(*)
+		from order_detail
+		where order_no=#{_parameter}
+	</select>
+	
+	<select id="selectSearchSalesDetails" parameterType="kr.co.admin.model.vo.SearchById" resultType="order">
+		select 
+			order_no as orderNo,
+			member_no as memberNo,
+			order_all_price as orderAllPrice,
+			decode(order_status, 1, '결제완료', 0, '결제취소') as orderStatusString,
+			order_date as orderDate,
+			decode(order_product, 1, '강습', 2, '숙박', 3, '강습+숙박') as orderProductString,
+			member_id as memberId
+		from order_tbl
+		join member_tbl using(member_no)
+		<choose>
+			<when test='searchType.equals("i")'>
+				where member_id like '%'||#{searchKeyword}||'%'
+			</when>
+			<when test='searchType.equals("op")'>
+				<choose>
+					<when test="searchKeyword.equals('강습')">
+						where order_product = 1
+					</when>				
+					<when test="searchKeyword.equals('숙박')">
+						where order_product = 2
+					</when>	
+					<when test="searchKeyword.equals('강습+숙박')">
+						where order_product = 3
+					</when>			
+				</choose>
+			</when>
+		</choose>
+		order by order_no desc
+	</select>
+	
+	<select id="selectAllCarpool" parameterType="map" resultType="c">
+		select *
+        from(select rownum as rnum, c.*
+        from (select
+			carpool_no as carpoolNo,
+			driver_no as driverNo,
+			member_id as driverId,
+			oneway_round as onewayRound,
+			departure_region as departureRegion,
+			arrival_region as arrivalRegion,
+			capacity,
+			departure_date as departureDate,
+			closure
+		from carpool
+		join member_tbl on(driver_no=member_no)) c)
+        where rnum between #{start} and #{end}
+	</select>
+	
+	<select id="selectCarpoolCount" resultType="_int">
+		select
+			count(*)
+		from carpool
+	</select>
+	
+	<update id="deleteCarpool" parameterType="_int">
+		update carpool
+		set closure=3
+		where carpool_no=#{_parameter}
+	</update>
+	
+	<select id="selectSearchCarpool" parameterType="string" resultType="c">
+		select
+			carpool_no as carpoolNo,
+			driver_no as driverNo,
+			member_id as driverId,
+			oneway_round as onewayRound,
+			departure_region as departureRegion,
+			arrival_region as arrivalRegion,
+			capacity,
+			departure_date as departureDate,
+			closure
+		from carpool
+		join member_tbl on(driver_no=member_no)
+		where member_id=#{searchKeyword}
+	</select>
+ 	
+ 	
+ 	<select id="selectTotalSalesAmount" resultType="_int">
+ 		select nvl(sum(order_all_price),0)
+ 		from order_tbl 
+ 		where order_status=1
+ 	</select>
+ 	
+ 	<select id="selectTodaySalesAmount" resultType="_int">
+ 		select nvl(sum(order_all_price),0)
+ 		from order_tbl 
+ 		where (order_status=1) 
+ 		and (substr(order_date,0,10) like (to_char(sysdate,'yyyy-mm-dd')))
+ 	</select>
+ 	
+ 	 <select id="selectCarpoolRecruitingCount" resultType="_int">
+		select
+			count(*)
+		from carpool
+		where closure=2
+ 	</select>
+ 	
+ 	<select id="selectNewProduct" resultType="pr">
+         select * from (select
+        	'강습' as productType,
+            lesson_no as productNo,
+			lesson_title as productTitle,
+			lesson_city as productCity,
+			lesson_status as productStatus,
+			l.writer as productWriter
+        from lesson l
+        union
+        select
+        	'숙박' as productType,
+            house_no as productNo,
+			house_title as productTitle,
+			house_city as productCity,
+			house_status as productStatus,
+			h.writer as productWriter
+        from house h)
+        <![CDATA[
+        where (productStatus=1) and rownum<=5
+        ]]>
+        order by productStatus desc, productNo desc
+ 	</select>
+ 	
+ 	<select id="selectNewMember" resultType="m">
+ 		select
+ 			member_no as memberNo,
+ 			member_id as memberId,
+ 			member_email as memberEmail,
+ 			member_name as memberName
+ 		from member_tbl
+ 		<![CDATA[
+ 		where (member_grade in(2,3)) and rownum<=5
+ 		]]>
+ 		order by member_no desc
+ 	</select>
+ 	
+ 	 <select id="selectNewCarpoolDriver" resultType="m">
+ 		select distinct
+ 			member_no as memberNo,
+ 			member_id as memberId,
+ 			member_email as memberEmail,
+ 			member_name as memberName
+ 		from carpool
+ 		join member_tbl on(driver_no=member_no)
+ 		<![CDATA[
+ 		where rownum<=5
+ 		]]>
+ 		order by member_no desc
+ 	</select>
+ 	
+ 	<select id="selectAllAdmin" resultType="m">
+ 		select
+ 			member_no as memberNo,
+ 			member_id as memberId,
+ 			member_email as memberEmail,
+ 			member_name as memberName
+ 		from member_tbl
+ 		where member_grade=1
+ 		order by member_no desc
+ 	</select>
+ 	
+ 	<select id="selectGenderRatio" resultType="kr.co.admin.model.vo.GenderRatio">
+ 		select 
+			round(sum(man)/count(*)*100,0) as manRatio
+			,round(sum(woman)/count(*)*100,0) as womanRatio
+		from(
+			select 
+			(case when member_gender=1 then 1 else 0 end) as man
+			,(case when member_gender=2 then 1 else 0 end) as woman
+			from 
+			member_tbl)
+ 	</select>
+ 	
+ 	<select id="selectLessonSalesAmount" resultType="kr.co.admin.model.vo.SalesAmount">
+	 	select 
+            substr(order_date,1,4) as year,
+            substr(order_date,6,2) as month,
+            sum(order_all_price) as sales
+		from order_tbl
+		where order_product=1
+		group by substr(order_date,1,4),substr(order_date,6,2)
+		order by 1
+ 	</select>
+ 	
+ 	<select id="selectHouseSalesAmount" resultType="kr.co.admin.model.vo.SalesAmount">
+	 	select 
+            substr(order_date,1,4) as year,
+            substr(order_date,6,2) as month,
+            sum(order_all_price) as sales
+		from order_tbl
+		where order_product=2
+		group by substr(order_date,1,4),substr(order_date,6,2)
+		order by 1
+ 	</select>
+ 	
+ 	<select id="selectAllSalesAmount" resultType="kr.co.admin.model.vo.SalesAmount">
+	 	select 
+            substr(order_date,1,4) as year,
+            substr(order_date,6,2) as month,
+            sum(order_all_price) as sales
+		from order_tbl
+		where order_product=3
+		group by substr(order_date,1,4),substr(order_date,6,2)
+		order by 1
+ 	</select>
+ 	
+ 	<insert id="insertVisitTotalCount">
+ 		insert into visitant 
+ 		values(visitant_seq.nextval, to_char(sysdate,'yyyy-mm-dd'))
+ 	</insert>
+ 	
+ 	<select id="selectVisitTodayCount" resultType="_int">
+ 		select count(*) as todayCount
+ 		from visitant 
+ 		where substr(visitant_date,1,10)=to_char(sysdate,'yyyy-mm-dd')
+ 	</select>
+ 	
+ 	<select id="selectVisitTotalCount" resultType="_int">
+ 		select count(*) as totalCount
+ 		from visitant
+ 	</select>
+ 	
+ 	<select id="selectVisitWeekCount" resultType="kr.co.admin.model.vo.Visitant">
+		select substr(visitant_date,9,2)as visitantDate, count(*) as dayTotal
+		from visitant 
+		where visitant_date between sysdate-7 and sysdate
+		group by visitant_date
+		order by visitant_date
+ 	</select>
+ 	
+ 	<select id="selectTopReview" resultType="rv">
+ 		select review_writer as reviewWriter,
+		    review_title as reviewTitle,
+		    review_content as reviewContent,
+		    product_category as productCategory
+		from review 
+		<![CDATA[
+		where rownum<=6 
+		]]>
+		order by rating desc
+ 	</select>
+ 	
+ 	<select id="selectNewAdminChatCount" resultType="_int">
+ 		select count(*) 
+ 		from chat_active 
+ 		where chat_activation=1
+ 	</select>
+ 	
+<!--  	<select id="selectNewAdminChatCount" resultType="_int">
+
+ 	</select> -->
+
+</mapper>

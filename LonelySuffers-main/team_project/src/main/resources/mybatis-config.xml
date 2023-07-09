@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd" >
+<configuration>
+	<settings>
+		<!--  null값이 발생하면 빈칸("")이 아니라 그대로 null로 처리 -->
+		<setting name="jdbcTypeForNull" value="NULL" />
+	</settings>
+	<typeAliases>
+
+		<typeAlias type="kr.co.carpool.model.vo.Carpool" alias="c"/>
+		<typeAlias type="kr.co.carpool.model.vo.CarpoolFilter" alias="cf"/>
+		<typeAlias type="kr.co.carpool.model.vo.Passenger" alias="p"/>
+		<typeAlias type="kr.co.carpool.model.vo.CarpoolMatch" alias="match"/>
+		<typeAlias type="kr.co.house.model.vo.House" alias="h"/>			<!-- House      as h -->
+		<typeAlias type="kr.co.inquiry.model.vo.Inquiry" alias="i"/>		<!-- Inquiry    as i -->
+		<typeAlias type="kr.co.inquiry.model.vo.Answer" alias="ia"/>		<!-- Answer     as ia -->
+		<typeAlias type="kr.co.lesson.model.vo.Lesson" alias="l"/>			<!-- Lesson     as l -->
+		<typeAlias type="kr.co.lesson.model.vo.LessonBook" alias="lb"/>	 	<!-- LessonBook as lb -->
+		<typeAlias type="kr.co.member.model.vo.Member" alias="m"/>			<!-- Member     as m -->
+		<typeAlias type="kr.co.notice.model.vo.Notice" alias="n"/>			<!-- Notice     as n -->
+		<typeAlias type="kr.co.faq.model.vo.Faq" alias="fq"/>				<!-- Faq     	as fq -->
+		<typeAlias type="kr.co.review.model.vo.Review" alias="rv"/>			<!-- review   	as rv -->
+		<typeAlias type="kr.co.review.model.vo.RFileVO" alias="rf"/>
+		<typeAlias type="kr.co.notice.model.vo.FileVO" alias="f"/>
+		<typeAlias type="kr.co.house.model.vo.Room" alias="r"/>				<!-- Room 	    as r -->
+		<typeAlias type="kr.co.admin.model.vo.Search" alias="s"/>			<!-- Search   as s -->
+		<typeAlias type="kr.co.member.model.vo.WishList" alias="w"/>		<!-- WishList   as w -->	
+		<typeAlias type="kr.co.house.model.vo.RoomBook" alias="rb"/>		<!-- RoomBook   as rb -->
+		<typeAlias type="kr.co.member.model.vo.Order" alias="order"/>
+		<typeAlias type="kr.co.chat.model.vo.ChatActive" alias="ca"/>
+		<typeAlias type="kr.co.chat.model.vo.ChatContent" alias="cc"/>
+		<typeAlias type="kr.co.admin.model.vo.Product" alias="pr"/>
+		<typeAlias type="kr.co.order.model.vo.Order" alias="o"/>
+		<typeAlias type="kr.co.order.model.vo.OrderDetail" alias="od"/>
+	</typeAliases>		
+
+
+</configuration>

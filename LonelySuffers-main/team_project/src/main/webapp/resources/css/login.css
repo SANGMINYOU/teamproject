@@ -1,0 +1,459 @@
+.content{
+    margin: 0 auto;
+    width: 500px;
+    height: 500px;
+    border-radius: 10px;
+}
+
+[name=close-modal]{
+    display: flex;
+    float: right;
+    border: none;
+    background-color: #fff;
+
+}
+
+.main{
+    box-sizing: border-box;
+    width: 500px;
+    margin: 0px auto ;
+    box-shadow: -5px -5px 20px #FFF, 5px 5px 15px #a8aaaf;
+    padding-bottom: 40px;
+    padding-top: 40px;
+    border-radius: 15px;
+    background-color: #efeded8c;
+
+}
+.waveEffectWord-back,.waveEffectWord-front{
+    font-family: 'Delicious Handrawn', cursive !important;
+    width: 400px;
+    margin: 0 auto;
+    text-align: center;
+    padding-top: 10px;
+}
+
+.content-top{
+    text-align: center;
+    border-bottom: none;
+    color: #61677C;
+    width: 400px;
+    height: 100px;
+    margin: 0 auto;
+    box-shadow: -5px -5px 20px #FFF, 5px 5px 15px #a8aaaf;
+    transition: all 0.2s ease-in-out;
+    font-weight: 600;
+    border: none;
+    background-color: #efeded8c;
+    outline: none;
+    border-radius: 20px;
+    padding-top: 5px;
+}
+
+
+.main-top{
+    padding-top: 100px;
+    text-align: center;
+    padding-bottom: 50px;
+    border-top: none;
+    margin-left: 50px;
+    margin-right: 50px;
+
+}
+
+
+input[type=submit]{
+    margin-top: 20px;
+    width: 398px;
+    height: 40px;
+    border: none;
+    transition: all .2s;
+}
+
+.main-bottom{
+   text-align: center;
+}
+
+#findIdBtn{
+    margin: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    padding: 5px;
+}
+
+#findMemberPw{
+    margin: 10px;
+}
+
+#findMemberName,#findMemberEmail{
+    width: 498px;
+}
+#joinMember{
+    margin: 10px;
+    padding: 5px;
+}
+
+.modal-header, .close {
+    background: -webkit-linear-gradient(45deg, #3ac5c8 1%, #0b509e 100%);
+    background: linear-gradient(45deg, #3ac5c8 1%, #0b509e 100%);
+    color:white !important;
+    text-align: center;
+    font-size: 30px;
+}
+
+.modal-header>h4{
+    color:white !important;
+    text-align: center;
+    font-size: 30px;
+}
+
+    .dataNull{
+        color : #f00;
+}
+
+    .loginBtn{
+        width: 80%;
+    }
+
+    .findMemberPwForm>div {
+        position: relative;
+        width: 300px;
+        margin-left: 20px;
+        margin-top: 30px;
+        margin-bottom: 40px;
+    }
+    
+    .findMemberPwForm>div>input {
+        font-size: 15px;
+        color: #222222;
+        width: 300px;
+        border: none;
+        border-radius: 0px;
+        border-bottom: solid #aaaaaa 1px;
+        padding-bottom: 10px;
+        padding-left: 10px;
+        position: relative;
+        background: none;
+        z-index: 5;
+    }
+    
+    .findMemberPwForm>div>input::placeholder { color: #aaaaaa; }
+
+    .findMemberPwForm>div>input:focus { outline: none; }
+    
+    .findMemberPwForm>div>span {
+        display: block;
+        position: absolute;
+        bottom: 0;
+        left: 0%;  /* right로만 바꿔주면 오 - 왼 */
+        background-color: #666;
+        width: 0;
+        height: 2px;
+        border-radius: 2px;
+        transition: 0.5s;
+    }
+    
+    .findMemberPwForm>div>label {
+        position: absolute;
+        color: #aaa;
+        left: 10px;
+        font-size: 20px;
+        bottom: 8px;
+        transition: all .2s;
+    }
+    
+    .findMemberPwForm>div>input:focus ~ label, .findMemberPwForm>div>input:valid ~ label {
+        font-size: 16px;
+        bottom: 40px;
+        color: #666;
+        font-weight: bold;
+    }
+    
+    .findMemberPwForm>div>input:focus ~ span, .findMemberPwForm>div>input:valid ~ span {
+        width: 100%;
+    }
+
+
+    .customInput>div {
+        position: relative;
+        width: 398px;
+        margin-left: 0px;
+        margin-top: 50px;
+        margin-bottom: 30px;
+    }
+    
+    .customInput>div>input {
+        font-size: 15px;
+        color: #222222;
+        width: 398px;
+        border: none;
+        border-bottom: solid #aaaaaa 1px;
+        padding-bottom: 7px;
+        padding-top: 5px;
+        padding-left: 20px;
+        position: relative;
+        background: none;
+        z-index: 5;
+        border-radius: 10px;
+        box-shadow: -5px -5px 20px #FFF, 5px 5px 15px #a8aaaf;
+    }
+    
+    .customInput>div>input::placeholder { color: #aaaaaa; 
+        box-shadow: inset 1px 1px 2px #cdced1, inset -1px -1px 2px #FFF;
+    }
+
+    .customInput > div > input:hover { color: #aaaaaa; 
+        box-shadow: inset 1px 1px 2px #cdced1, inset -1px -1px 2px #FFF;
+    } 
+    
+    .customInput>div>input:focus { 
+        outline: none; 
+        box-shadow: inset 3px 3px 6px #cbced1, inset -6px -6px 6px white;
+    }
+    
+    .customInput>div>span {
+        display: block;
+        position: absolute;
+        bottom: 0;
+        left: 0%;  /* right로만 바꿔주면 오 - 왼 */
+        background-color: #666;
+        width: 0;
+        height: 2px;
+        border-radius: 2px;
+        transition: 0.5s;
+    }
+
+
+    
+    .customInput>div>label {
+        position: absolute;
+        color: #aaa;
+        left: 20px;
+        font-size: 20px;
+        bottom: 2px;
+        transition: all .2s;
+    }
+    
+    .customInput>div>input:focus ~ label, .customInput>div>input:valid ~ label {
+        font-size: 16px;
+        bottom: 40px;
+        color: #666;
+        font-weight: bold;
+    }
+    
+    .customInput>div>input:focus ~ span, .customInput>div>input:valid ~ span {
+        width: 100%;
+    }
+
+   .customInputLong>div {
+    position: relative;
+    width: 498px;
+    margin-left: 0px;
+    margin-top: 50px;
+    margin-bottom: 30px;
+}
+
+.customInputLong>div>input {
+    font-size: 15px;
+    color: #222222;
+    width: 498px;
+    border: none;
+    border-bottom: solid #aaaaaa 1px;
+    padding-bottom: 7px;
+    padding-top: 5px;
+    padding-left: 20px;
+    position: relative;
+    background: none;
+    z-index: 5;
+    border-radius: 10px;
+    box-shadow: inset 2px 2px 5px #cbced1, inset -6px -6px 6px white;
+}
+
+.customInputLong>div>input::placeholder { color: #aaaaaa; 
+    box-shadow: inset 2px 2px 5px #cbced1, inset -6px -6px 6px white
+
+}
+.customInputLong>div>input:focus { outline: none; 
+    box-shadow: inset 1px 1px 2px #cdced1, inset -1px -1px 2px #FFF;
+}
+
+.customInputLong>div>span {
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 0%;  /* right로만 바꿔주면 오 - 왼 */
+    background-color: #666;
+    width: 0;
+    height: 2px;
+    border-radius: 2px;
+    transition: 0.5s;
+}
+
+.customInputLong>div>label {
+    position: absolute;
+    color: #aaa;
+    left: 20px;
+    font-size: 20px;
+    bottom: 2px;
+    transition: all .2s;
+}
+
+.customInputLong>div>input:focus ~ label, .customInputLong>div>input:valid ~ label {
+    font-size: 16px;
+    bottom: 40px;
+    color: #666;
+    font-weight: bold;
+}
+
+.customInputLong>div>input:focus ~ span, .customInputLong>div>input:valid ~ span {
+    width: 100%;
+}
+
+#findPwBtn{
+    cursor: pointer;
+    padding: 5px;
+}
+
+.toggleSwitch{
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 160px;
+    color: #c3c3c3;
+    box-shadow: -5px -5px 20px #FFF, 5px 5px 15px #a8aaaf;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    font-weight: 600;
+    border: none;
+    background-color: #efeded8c;
+    border-radius: 20px;
+    padding-left: 6px;
+    border-radius: 20px;
+    padding-bottom: 4px;
+  }
+  .toggleSwitch:hover{
+  box-shadow: -2px -2px 5px #FFF, 2px 2px 5px #000;
+  background-color: #efeded8c;
+  color: #61677C;
+  }
+
+
+  [type="checkbox"] {
+    appearance: none;
+    position: relative;
+    /* border: max(2px, 0.1em) solid gray; */
+    border-radius: 1.25em;
+    outline: none;
+    width: 2.25em;
+    height: 1.25em;
+    box-shadow: inset 1px 1px 2px #000, inset -1px -1px 2px #FFF;
+
+  }
+  
+  [type="checkbox"]::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 1em;
+    height: 1em;
+    border-radius: 50%;
+    transform: scale(0.8);
+    background-color: gray;
+    top: 2px;
+    left: 4px;
+    transition: left 250ms linear;
+  }
+  
+  [type="checkbox"]:checked {
+    background-color: rgb(82, 252, 3);
+    /* border-color: rgb(82, 252, 3); */
+    border: none;
+    box-shadow: inset 1px 1px 2px #000, inset -1px -1px 2px #FFF;
+  }
+  
+  [type="checkbox"]:checked::before {
+    background-color: white;
+    left: 1em;
+    top: 2px;
+  }
+
+    
+  [type="checkbox"]:checked+span{
+    color: #61677C;
+  }
+  
+  [type="checkbox"]:disabled {
+    border-color: lightgray;
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+  
+  [type="checkbox"]:disabled:before {
+    background-color: lightgray;
+  }
+  
+  [type="checkbox"]:disabled + span {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+  
+  [type="checkbox"]:focus-visible {
+    outline-offset: max(2px, 0.1em);
+    outline: none;
+    /* outline: max(2px, 0.1em) solid rgb(82, 252, 3); */
+  }
+
+  /* Global CSS */
+  body {
+    /* display: grid; */
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  fieldset {
+    border: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  .main-top>form>.btn-success,.customInputLong>.btn-successs,.main-bottom>.btn-success,.selectId>.btn-successs,.modal-footer>.btn-successs{
+    color: #61677C;
+    font-weight: bold;
+    box-shadow: -5px -5px 15px #FFF, 5px 5px 15px #a8aaaf;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    font-weight: 600;
+    border: none;
+    background-color: #efeded8c !important;
+    outline: none;
+    border-radius: 10px;
+  }
+
+  .main-top>form>.btn-success:hover,.customInputLong>.btn-successs:hover,.main-bottom>.btn-success:hover,.selectId>.btn-successs:hover,.modal-footer>.btn-successs:hover{
+    box-shadow: -2px -2px 5px #FFF, 2px 2px 5px #000;
+    background-color: #efeded8c;
+    color: #61677C !important;
+  }
+  .main-top>form>.btn-success:active,.customInputLong>.btn-successs:active,.main-bottom>.btn-success:active,.selectId>.btn-successs:active,.modal-footer>.btn-successs:active{
+    box-shadow: inset 1px 1px 2px #000, inset -1px -1px 2px #FFF;
+    background-color : #efeded8c;
+    color: #61677C !important;
+  }
+
+  /*#a8aaaf*/
+
+  .inputVaild:valid{
+    box-shadow: -5px -5px 15px #FFF, 5px 5px 15px #a8aaaf;
+    font-weight: 600;
+  }
+
+  .modal-body,.modal-footer{
+    background-color: #efeded8c;
+  }

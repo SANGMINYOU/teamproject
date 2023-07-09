@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="carpool">
+
+ 
+ <!-- 전체카풀조회(carpoolMain 페이지용)-->
+ 	<select id="selectAllCarpool" resultType="c">
+ 	select 
+ 		carpool_no,
+ 		departure_date,
+ 		reg_date,
+ 		oneway_round ,
+ 		departure_region,
+ 		departure_district,
+ 		arrival_region,
+ 		arrival_district,
+ 		capacity,
+ 		surfboard_room,
+ 		driver_msg,
+ 		(select count(*) from passenger p where p.carpool_no = c.carpool_no and match_status=2) as reserved
+     FROM CARPOOL c
+	</select>
+	
+<!-- 한개의 카풀 조회(상세페이지용) -->
+	<select id="selectOneCarpool" parameterType="_int" resultType="c">
+	select
+		c.driver_no as driverNo,
+		member_name as driverName,
+		member_gender as driverGender,
+		c.reg_date as regDate,
+		c.carpool_no as carpoolNo,
+		c.departure_date as departureDate,
+		c.departure_region as departureRegion,
+		c.departure_district as departureDistrict,
+		c.arrival_region as arrivalRegion,
+		c.arrival_district as arrivalDistrict,
+		c.capacity as capacity,
+		c.carpool_price as carpoolPrice,
+		c.oneway_round as onewayRound,
+		c.closure as closure,
+		c.driver_msg as driverMsg,
+		c.surfboard_room as surfboardRoom,
+		(select count(*) from passenger p where p.carpool_no = c.carpool_no and match_status=2) as reserved
+		from carpool c
+		left join member_tbl on(member_no=driver_no) 
+		where carpool_no=#{_parameter}
+	</select>
+	
+	
+	<insert id="insertCarpool" parameterType="c">
+		insert into carpool values(
+		carpool_seq.nextval, #{driverNo}, #{capacity}, #{onewayRound},  #{departureRegion}, #{departureDistrict}, #{arrivalRegion}, #{arrivalDistrict},
+		#{departureDate}, #{departureTime}, #{returnDate}, #{returnTime},#{driverMsg}, #{carpoolPrice}, #{surfboardRoom}, 
+		TO_CHAR(SYSDATE,'YYYY-MM-DD/HH24:MI:SS'), 2)
+	</insert>	
+	
+<!-- 
+	운전자 페이지에 나올 리스트 보기. passenger까지 받아와야하기 때문에, carpool VO에
+	passengerList를 ArrayList로 받아왔고, 이를 넘겨주는 쿼리를 만들어야해
+	참고할 것은 spring-workspace의 selectOneBoard, selectFileList와 resultMap 세개 세트
+	service, dao를 안들리고 두개의 쿼리를 호출해야하기때문에 쓰는 방식이다. 
+ -->	
+ 
+ 
+
+
+	<!-- 아래 세개가 한 세트이다. 드라이버가 카풀 신청을 받은 마이페이지를 보는 것인데
+	 carpool VO 안에 list array로 passenger을 받아왔다. 카풀 VO와 함께 그 안의 
+	 passenger list도 받아오기때문에 --> 
+	<select id="selectMyLists"  parameterType="map" resultMap="getMyLists">
+		select
+			c.carpool_no,
+			c.driver_no,
+			m.member_name,
+			m.member_gender,
+			m.member_phone,
+			m.member_email,
+			c.departure_date,
+			c.capacity,
+			c.closure,
+			c.departure_region,
+			c.arrival_region,
+			c.departure_district,
+			c.arrival_district,
+			(select count(*) from passenger p where p.carpool_no = c.carpool_no and match_status=2) as reserved
+		from carpool c
+			join member_tbl m on (c.driver_no = m.member_no)
+				<if test="driverNo!=null">
+					where driver_no=#{driverNo}
+				</if>
+				<if test="memberNo!=null">
+					where member_no=#{memberNo}
+				</if>
+				order by c.departure_date
+	</select>
+	<select id="selectPassengerList" parameterType="_int" resultType="p">
+		select
+			match_no as matchNo,
+			match_status as matchStatus,
+			carpool_no as carpoolNo,
+			passenger_no as passengerNo,
+			m.member_id as passengerId,
+			m.member_gender as passengerGender,
+			m.member_name as passengerName,
+			m.member_phone as passengerPhone,
+			m.member_email as passengerEmail,
+			passenger_msg as passengerMsg,
+			request_date as requestDate
+		from passenger p
+			join member_tbl m on (passenger_no = member_no)
+		where carpool_no=#{_parameter}	
+	</select>
+	<resultMap type="c" id="getMyLists">
+			<result column="carpool_no" property="carpoolNo"/>
+			<result column="driver_no" property="driverNo"/>
+			<result column="member_name" property="driverName"/>
+			<result column="member_gender" property="driverGender"/>
+			<result column="member_phone" property="driverPhone"/>
+			<result column="member_email" property="driverEmail"/>
+			<result column="departure_date" property="departureDate"/>
+			<result column="capacity" property="capacity"/>
+			<result column="closure" property="closure"/>
+			<result column="reserved" property="reserved"/>
+			<result column="departure_date" property="departureDate"/>
+			<result column="departure_region" property="departureRegion"/>
+			<result column="arrival_region" property="arrivalRegion"/>
+			<result column="departure_district" property="departureDistrict"/>
+			<result column="arrival_district" property="arrivalDistrict"/>
+		<collection property="passengerList"
+					select="selectPassengerList"
+					column="carpool_no"
+					ofType="p" 
+					javaType="java.util.ArrayList"	
+		/>
+		<!--ofType: arrayList에 들어갈 type -->
+	</resultMap>
+	
+	<!-- 운전자가 자기가 받은 카풀 신청 대기목록의 승인/거절 기능 -->
+	<update id="updateDriverDecision" parameterType="p">
+		update passenger
+		<choose>
+			<when test="matchStatus == 1">set match_status=1</when>
+			<when test="matchStatus == 2">set match_status=2</when>
+		</choose>
+		where match_no=#{matchNo}
+	</update>
+	
+	<!-- 운전자가 자기의 카풀 마감시키거나 삭제하능 기능 -->
+	<update id="updateDriverClosing" parameterType="c">
+		update carpool
+		<choose>
+			<when test="closure == 1">set closure=1</when>
+			<when test="closure == 3">set closure=3</when>
+		</choose>
+		where carpool_no=#{carpoolNo}
+	</update>
+	
+	<!-- 탑승자의 마이페이지 -->
+	<select id="selectMyRequests" parameterType="map" resultType="c">
+		select 
+			m.member_no as driverNo,
+	 		carpool_no as carpoolNo,
+	 		m.member_name as driverName,
+	 		m.member_id as driverId,
+	 		m.member_gender as driverGender,
+	 		m.member_phone as driverPhone,
+	 		m.member_email as driverEmail,
+	 		departure_date as departureDate,
+	 		oneway_round as onewayRound,
+	 		departure_region as departureRegion,
+	 		departure_district as departureDistrict,
+	 		arrival_region as arrivalRegion,
+	 		arrival_district as arrivalDistrict,
+	 		capacity as capacity,
+	 		surfboard_room as surfboardRoom,
+	 		driver_msg as driverMsg,
+	 		closure as closure,
+	 		(select count(*) from passenger p where p.carpool_no = c.carpool_no and match_status=2) as reserved
+	     FROM CARPOOL c
+	     left join member_tbl m on(member_no=driver_no) 
+	      where carpool_no in (select carpool_no from passenger where passenger_no=#{memberNo}) 
+	</select>
+
+	<select id="selectPassenger" parameterType="match" resultType="_int" >
+		select count(*) from passenger where carpool_no=#{carpoolNo} and passenger_no=#{passengerNo}
+	</select>
+	
+	
+ 	<select id="selectPassengerOne" parameterType="map" resultType="p">
+ 		select match_no as matchNo, 
+ 		match_status as matchStatus
+ 		from passenger where carpool_no=#{carpoolNo} and passenger_no=#{memberNo} 
+ 	</select>
+ 	
+ 	<update id="updateClosure" parameterType="c">
+ 		update carpool set closure=1
+ 		where departure_date <![CDATA[ <]]> to_char(sysdate,'yyyy-mm-dd') and closure=2
+ 	</update>
+ 
+ 
+</mapper>
